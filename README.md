@@ -4,7 +4,7 @@ Trabalho integrador das disciplinas de Engenharia de Software I, Programação I
 ## Descrição
 O seguinte projeto consiste num sistema de agendamento para verificação de veículos de transporte de gasolina.
 
-<p>Dentro do sistema será possível:</p>
+<p>Dentro do sistema:</p>
 
 <ul>
 <li>Os funcionários poderão informar os dias disponíveis para verificação do veículo</li>

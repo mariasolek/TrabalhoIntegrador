@@ -1,15 +1,10 @@
-## Trabalho Integrador
-Trabalho integrador das disciplinas de Engenharia de Software I, Programação II e Banco de Dados I.
+## Sistema de agendamentos 
+Trabalho integrador das disciplinas de Engenharia de Software I, Programação II e Banco de Dados I.</br>
+Autores: Maria Clara Solek da Costa Vaz (2311100059) e Ângela Cardoso Siqueira (2311100029)
 
 ## Descrição
-O seguinte projeto consiste num sistema de agendamento para verificação de veículos de transporte de gasolina.
+O seguinte projeto consiste num sistema de agendamento para verificação de veículos de transporte de gasolina. Dentro do sistema os funcionários poderão informar os dias disponíveis para verificação do veículo e o resultado da verificação, e visualizar as estatísticas de um período de tempo selecionado. Além disso, o proprietário do veículo pode fazer a solicitação de agendamento (que os funcionários poderão aceitar ou declinar) diretamente já tendo acesso as datas disponíveis.
 
-<p>Dentro do sistema:</p>
-
-<ul>
-<li>Os funcionários poderão informar os dias disponíveis para verificação do veículo</li>
-<li>Os funcionários poderão informar o resultado da verificação</li>
-<li>O proprietário do veículo pode fazer a solicitação de agendamento diretamente já tendo acesso as datas disponíveis</li>
-<li>Os funcionários poderão aceitar as solicitações, assim agendando efetivamente a verificação</li>
-<li>Os funcionários poderão visualizar as estatísticas de um período de tempo selecionado</li>
-</ul>
+## Organização
+<li>Na pasta Sistema-de-agendamento está localizado o código do projeto</li>
+<li>Na pasta Projeto está localizado o arquivo da documentação dos requisitos e futuramente nessa pasta serão adicionados o modelo conceitual e lógico do banco de dados</li>

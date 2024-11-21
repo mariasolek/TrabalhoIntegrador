@@ -7,4 +7,4 @@ O seguinte projeto consiste num sistema de agendamento para verificação de ve�
 
 ## Organização
 <li>Na pasta Sistema-de-agendamento está localizado o código do projeto</li>
-<li>Na pasta Projeto está localizado o arquivo da documentação dos requisitos e futuramente nessa pasta serão adicionados os casos de teste e os modelos conceitual e lógico do banco de dados</li>
+<li>Na pasta Projeto está localizado o arquivo da documentação dos requisitos e futuramente nessa pasta serão adicionados os modelos conceitual e lógico do banco de dados</li>

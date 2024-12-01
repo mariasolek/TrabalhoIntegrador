@@ -4,11 +4,7 @@ const server = express();
 server.use(express.json());
 server.use(express.urlencoded({extended: true}));
 
-server.listen(3001, ()=> {console.log('servidor rodando')});
-
-server.get('/', (req, res) => { //callback
-    res.send('Hello World');
-}); 
+server.listen(3000, ()=> {console.log('servidor rodando')});
 
 server.post('/cadastro', (req, res) => {
     const nome = req.body.funcionario;

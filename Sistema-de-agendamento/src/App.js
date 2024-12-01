@@ -1,12 +1,13 @@
 import React from 'react';
 import axios from "axios";
 import './App.css';
-import Menu from './Menu';
-import Cadastro from './Cadastro';
-import Login from './Login';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
 import CssBaseline from '@mui/material/CssBaseline';
+import Formulario from './Formulario';
+import Menu from './Menu';
+import Cadastro from './Cadastro';
+import Login from './Login';
 //import Button from '@mui/material/Button';
 
 axios.defaults.baseURL = "http://localhost:3000/";
@@ -18,6 +19,7 @@ function App() {
 
 	const [exibeCadastro, setExibeCadastro] = React.useState(false);
 	const [exibeLogin, setExibeLogin] = React.useState(false);
+	const [exibeFormulario, setExibeFormulario] = React.useState(false);
 
     React.useEffect(() => {
 		// verifica se já está logado
@@ -40,29 +42,27 @@ function App() {
 			case 'cadastro':
 				setExibeCadastro(true);
 				setExibeLogin(false);
+				setExibeFormulario(false);
 				break;
 			case 'login':
 				setExibeCadastro(false);
 				setExibeLogin(true);
+				setExibeFormulario(false);
 				break;
 			default:
 			setExibeCadastro(false);
 			setExibeLogin(false);
+			setExibeFormulario(true);
 		}
 	}
 
     return(
         <div>
-			<Container sx={{ flexGrow: 1 }} maxWidth="lg">
 			<CssBaseline />
 			<Menu controlaClique={controlaInterface} />
 			<Grid container justifyContent="center" spacing={2}>
+				<Formulario/>
 				<Grid>
-					{exibeCadastro ? (
-						<Cadastro/>
-					) : (
-						<div> </div>
-					)}
 					{exibeLogin ? (
 						<Login/>
 					) : (
@@ -70,7 +70,6 @@ function App() {
 					)}
 				</Grid>
 			</Grid>
-		</Container>
         </div>
     )
 }

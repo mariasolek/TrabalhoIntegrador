@@ -23,7 +23,7 @@ function Login() {
         alert("Enviando os dados:" + senha + " - " + codigo);
 
         try{
-            const response = await axios.post('http://localhost:3001/login', {
+            const response = await axios.post('http://localhost:3000/login', {
                 id: codigo,
                 senha: senha
         });
@@ -42,7 +42,7 @@ function Login() {
 
     return(
         <div>
- 
+            
         <Container fixed>
             <legend>
                 <h1>Login</h1>

@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-function Menu({controlaClique}) {
+function Menu({isLoggedIn, controlaClique}) {
     return(
         <div>
             <Box>
@@ -16,15 +16,41 @@ function Menu({controlaClique}) {
 
                         <Grid size={2}>
                                 <br/>
-                                <Button
-                                    id='login'
-                                    variant="link"
-                                    size="large"
-                                    startIcon ={<AccountCircleIcon color='primary'/>}
-                                    onClick={(event) => {  controlaClique(event.target.id); }} 
-                                >
-                                    Login
-                                </Button>
+                                {isLoggedIn ? (
+                                    <Grid>
+                                        <Grid>
+                                        <Button
+                                            id='Cadastro'
+                                            variant="link"
+                                            onClick={(event) => {   controlaClique(event.target.id); }}
+                                        >
+                                        Cadastro
+                                        </Button>
+                                        </Grid>
+                                        <Button
+                                            id='Logout'
+                                            variant="link"
+                                            onClick={(event) => {   controlaClique(event.target.id); }}
+                                        >
+                                            Logout
+                                        </Button>
+                                    </Grid>
+                                ):(
+                                    <Grid>
+                                        <Grid>
+                                        <Button
+                                            id='login'
+                                            variant="link"
+                                            size="large"
+                                            startIcon ={<AccountCircleIcon color='primary'/>}
+                                            onClick={(event) => {  controlaClique(event.target.id); }} 
+                                        >
+                                            Login
+                                        </Button>
+                                        </Grid>
+                                    </Grid>
+                                )}
+
                         </Grid>
                     </Grid>
                 </header>

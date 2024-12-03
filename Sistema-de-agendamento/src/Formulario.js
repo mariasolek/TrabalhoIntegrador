@@ -6,6 +6,8 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import axios from "axios";
+//import Calendario from './Calendario';
+import Agenda from './Agenda';
 
 function Formulario() {
 
@@ -107,7 +109,7 @@ function Formulario() {
                                         <input type="number" id="setas-ad" placeholder="Digite aqui" className='caixatexto'
                                         onChange={(e) => setSetasAdc(e.target.value)}></input><br/><br/>
 
-                                        <input type="submit" value= "Próximo" placeholder="Próximo" className='enviar'></input><br/>
+                                        <input type="submit" placeholder="enviar" className='enviar' id="enviarform"></input><br/>
                                     </Grid>
                                     </Grid>
                             </form>
@@ -119,9 +121,8 @@ function Formulario() {
                         <h2 id='cor'>Cheque as datas disponíveis para verificação</h2>
                         <p>As verificações podem acontecer de segunda à sexta, das 08:00 até 12:00 e da 13:00 até às 17:00.
                          A data pode ser agendada, mas o horário funciona por ordem de chegada.</p>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DateCalendar/>
-                        </LocalizationProvider>
+                         {/*tem q mudar isso aí*/}
+                        <Agenda/>
                     </Grid>
                 </Grid>
             </Container>

@@ -8,6 +8,13 @@ import Formulario from './Formulario';
 import Menu from './Menu';
 import Cadastro from './Cadastro';
 import Login from './Login';
+import Agenda from './Agenda';
+import Calendario from './Calendario';
+import Documentos from './Documentos';
+import Pendencias from './Pendencias';
+import Solicitacao from './Solicitacao';
+import DocumentosNovo from './DocumentosNovo';
+import Aceitas from './Aceito';
 //import Button from '@mui/material/Button';
 
 axios.defaults.baseURL = "http://localhost:3000/";
@@ -29,11 +36,11 @@ function App() {
 		}
 	}, []);
 
-	/*const handleLogout = () => {
+	const handleLogout = () => {
 		// Clear the token from localStorage
 		localStorage.removeItem("token");
 		setIsLoggedIn(false);
-	};*/
+	};
 
 
     function controlaInterface(id) { //teste
@@ -49,10 +56,15 @@ function App() {
 				setExibeLogin(true);
 				setExibeFormulario(false);
 				break;
+			case 'logout':
+				handleLogout();
+				setExibeCadastro(false);
+				setExibeLogin(false);
+				setExibeFormulario(true);
 			default:
-			setExibeCadastro(false);
-			setExibeLogin(false);
-			setExibeFormulario(true);
+				setExibeCadastro(false);
+				setExibeLogin(false);
+				setExibeFormulario(false);
 		}
 	}
 
@@ -61,14 +73,11 @@ function App() {
 			<CssBaseline />
 			<Menu controlaClique={controlaInterface} />
 			<Grid container justifyContent="center" spacing={2}>
-				<Formulario/>
-				<Grid>
-					{exibeLogin ? (
+			{exibeLogin ? (
 						<Login/>
 					) : (
-						<div> </div>
-					)}
-				</Grid>
+				<Aceitas/>
+				)}
 			</Grid>
         </div>
     )

@@ -4,6 +4,51 @@ import Box from '@mui/material/Box';
 //import Grid from '@mui/material/Grid2';
 
 function Cadastro() {
+    const [formData, setFormData] = useState({
+        cod: '',
+        nome: '',
+        senha: '',
+        telefone: '',
+        email: '',
+        cargo: ''
+    });
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData((prevState) => ({
+            ...prevState,
+            [id]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Impede o comportamento padrão do formulário
+        try {
+            const response = await fetch('http://localhost:3001/cadastro_func', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                alert('Funcionário cadastrado com sucesso!');
+                setFormData({
+                    cod: '',
+                    nome: '',
+                    senha: '',
+                    telefone: '',
+                    email: '',
+                    cargo: ''
+                });
+            } else {
+                alert('Erro ao cadastrar funcionário. Verifique os dados e tente novamente.');
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('Erro no servidor. Tente novamente mais tarde.');
+        }
+    };
+
     return(
         <div>
             <Box>
@@ -12,9 +57,10 @@ function Cadastro() {
                     <h1>Cadastro de funcionário</h1>
                 </legend>
                 <fieldset>
-                    <form action='' method='get'>
+                    <form onSubmit={handleSubmit}>
                         <label for="nome">Nome completo</label><br/>
-                        <input type="text" id="nome" placeholder="Digite o nome" className='caixatexto'></input><br/>
+                        <input type="text" id="nome" placeholder="Digite o nome" className='caixatexto' 
+                        value={formData.telefone} onChange={handleChange} required></input><br/>
                         <label for="senha">Senha</label><br/>
                         <input type="password" id="senha" placeholder="Digite a senha" className='caixatexto'></input><br/>
                         <label for="nome">Telefone</label><br/>

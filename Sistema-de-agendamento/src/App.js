@@ -36,6 +36,11 @@ function App() {
 		}
 	}, []);
 
+	const handleLogin = (status) => {
+		setIsLoggedIn(status); // Atualiza o estado de login
+	};
+	
+
 	const handleLogout = () => {
 		// Clear the token from localStorage
 		localStorage.removeItem("token");
@@ -74,9 +79,9 @@ function App() {
 			<Menu controlaClique={controlaInterface} />
 			<Grid container justifyContent="center" spacing={2}>
 			{exibeLogin ? (
-						<Login/>
+						<Login handleLogin={handleLogin}/>
 					) : (
-				<Aceitas/>
+				<Cadastro/>
 				)}
 			</Grid>
         </div>

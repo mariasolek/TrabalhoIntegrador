@@ -11,8 +11,8 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const pgp = require("pg-promise")({});
 
-const usuario = "alex";
-const senha = "a1895";
+const usuario = "meu_usuario";
+const senha = "minha_senha";
 const db = pgp(`postgres://${usuario}:${senha}@localhost:5432/trabintegrador`);
 
 const app = express();

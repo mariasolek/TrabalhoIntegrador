@@ -8,7 +8,7 @@ const colunas = [
     { field: "placa", headerName: "Placa", width: 100 },
     { field: "nome", headerName: "Empresa", width: 120 },
     { field: "volt", headerName: "Volume", width: 80 },
-    { field: "dt", headerName: "Data", width: 80 },
+    { field: "dt", headerName: "Data", width: 90 },
 ];
 
 function Pendencias() {
@@ -58,7 +58,7 @@ function Pendencias() {
                     </Box>
                 ) : (
             <div>
-            <h1>Solicitações pendentes</h1>
+            <h2>Solicitações pendentes</h2>
             <Stack spacing={2}>
                 <Snackbar
                     open={openMessage}

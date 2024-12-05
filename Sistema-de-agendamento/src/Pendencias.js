@@ -5,10 +5,10 @@ import { Alert, Box, Snackbar, Stack } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 
 const colunas = [
-    { field: "placa", headerName: "Placa", width: 140 },
-    { field: "nome", headerName: "Empresa", width: 180 },
-    { field: "volt", headerName: "Volume", width: 100 },
-    { field: "dt", headerName: "Data", width: 180 },
+    { field: "placa", headerName: "Placa", width: 100 },
+    { field: "nome", headerName: "Empresa", width: 120 },
+    { field: "volt", headerName: "Volume", width: 80 },
+    { field: "dt", headerName: "Data", width: 80 },
 ];
 
 function Pendencias() {
@@ -70,7 +70,7 @@ function Pendencias() {
                         {messageText}
                     </Alert>
                 </Snackbar>
-                <Box style={{ height: "500px" }}>
+                <Box style={{ height: "500px", width: "400px"}}>
                     <DataGrid 
                     rows={linhas}
                     columns={colunas} 

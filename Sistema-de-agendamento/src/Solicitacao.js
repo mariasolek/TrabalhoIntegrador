@@ -15,9 +15,8 @@ function checkFileSize() {
     fs.setCustomValidity("");
   }
 
-  window.onload = () => {
+  React.onload = () => {
     document.getElementById("fs").onchange = checkFileSize;
-    document.getElementById("fs1").onchange = checkFileSize;
 };
   
 

@@ -11,8 +11,8 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const pgp = require("pg-promise")({});
 
-const usuario = "meu_usuario";
-const senha = "minha_senha";
+const usuario = "alex";
+const senha = "a1895";
 const db = pgp(`postgres://${usuario}:${senha}@localhost:5432/trabintegrador`);
 
 const app = express();
@@ -193,16 +193,31 @@ app.post("/cadastro_func", async (req, res) => {
     }
 });
 
-app.get("/solicitacoes_pendentes", requireJWTAuth, async (req, res) => {
-	try {
-		const solicitacoes = await db.any("SELECT * FROM solicitacao where status = 'pendente';");
-		console.log("Retornando todas as solicitações pendentes:");
-		res.json(funcionarios).status(200);
-	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
-	}
+app.get("/solicitacoes_pendentes", async (req, res) => {
+    try {
+        const solicitacoes = await db.any(`
+            SELECT 
+                s.cod AS id,
+                s.placa,
+                v.vol_total AS volume,
+                p.nome AS empresa,
+                r.dt AS data
+            FROM solicitacao s
+            JOIN veiculo v ON s.placa = v.placa
+            JOIN proprietario p ON v.prop = p.email
+            JOIN reservas r ON s.dt = r.cod
+            WHERE s.status = 'Pendente';
+        `);
+        console.log("Retornando todas as  solicitações pendentes");
+        res.json(solicitacoes).status(200);
+    } catch (error) {
+        console.error("Erro ao buscar solicitações pendentes:", error);
+        res.sendStatus(400);
+    }
 });
+
+
+
 
 app.get("/solicitacao", requireJWTAuth, async (req, res) => {
 	try {

@@ -1,5 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid2';
+import Button from '@mui/material/Button';
+import Agenda from './Agenda';
 
 function checkFileSize() {
     const fs = document.getElementById("fs");
@@ -15,9 +17,8 @@ function checkFileSize() {
     fs.setCustomValidity("");
   }
 
-  window.onload = () => {
+  React.onload = () => {
     document.getElementById("fs").onchange = checkFileSize;
-    document.getElementById("fs1").onchange = checkFileSize;
 };
   
 
@@ -31,10 +32,19 @@ function Solicitacao() {
     const [volt, setVolt] = React.useState("");
     const [n_comp, setNcompartimento] = React.useState("");
 
+    const [currentPage, setCurrentPage] = React.useState("solicit");
+
     return(
         <div>
+            {currentPage === "solicit" && (
             <Grid container spacing={40}>
                 <Grid>
+                    <Button
+                        variant="link"
+                        onClick={() => setCurrentPage("voltar")}
+                    >
+                        Voltar
+                    </Button>
                     <h1>Dados da solicitação</h1><br/>
                     <p>
                         Proprietário do veículo:{nome}<br/>
@@ -53,9 +63,15 @@ function Solicitacao() {
                     <label for="gru">Enviar GRU</label><br/>
                     <input type="file" id='fs' accept=".pdf" className='caixaarquivo'></input><br/>
 
-                    <input type='submit' id='enviargru' className='enviar'></input>
+                    <input type='submit' id='enviargru' className='enviar' onClick={() => setCurrentPage("voltar")}></input> 7
+                    {/*setCurrentPage foi colocado aqui por motivos de TESTE, mais tarde quando pudermos realmente enviar se a solicitação foi aceita ou não
+                    isso deve ser mudado seguindo o padrão do componente login !!!!*/}
                 </Grid>
             </Grid>
+            )}
+            {currentPage === "voltar" && (
+                <Agenda/>
+            )}
         </div>
     )
 }

@@ -81,7 +81,7 @@ function App() {
 			{exibeLogin ? (
 						<Login handleLogin={handleLogin}/>
 					) : (
-				<Cadastro/>
+				<Agenda/>
 				)}
 			</Grid>
         </div>

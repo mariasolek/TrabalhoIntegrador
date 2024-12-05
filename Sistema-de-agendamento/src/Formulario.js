@@ -96,9 +96,9 @@ function Formulario() {
 
                                         <label for="tipo-verif">Tipo de Verificação</label><br/>
                                         <select id="tipo-verif" className='caixatexto'> 
-                                            <option value="inicial">Inicial</option>
-                                            <option value="periodica">Periódica</option>
-                                            <option value="pos-reparo">Pós-reparo</option>
+                                            <option value="1">Inicial</option>
+                                            <option value="2">Periódica</option>
+                                            <option value="3">Pós-reparo</option>
                                         </select><br/>
 
                                         <label for="volume-tot">Volume total</label><br/>

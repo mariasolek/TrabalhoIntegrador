@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import axios from "axios";
+import Agenda from './Agenda';
 
 function Login(props) {
     const [codigo, setCodigo] = useState(''); 
@@ -9,6 +11,8 @@ function Login(props) {
     const [openMessage, setOpenMessage] = useState(false);
     const [messageText, setMessageText] = useState("");
     const [messageSeverity, setMessageSeverity] = useState("success");
+
+    const [currentPage, setCurrentPage] = React.useState("form");
 
     async function enviaLogin(event) {
         event.preventDefault();
@@ -26,7 +30,7 @@ function Login(props) {
 				// seta o estado do login caso tudo deu certo
 				props.handleLogin(true);
 				console.log(props.user);
-                alert("login realizado com sucesso!")
+                setCurrentPage("success");
 			} else {
 				// falha
 				console.error("Falha na autenticação");
@@ -43,6 +47,8 @@ function Login(props) {
     return (
         <div>
             <Container fixed>
+            {currentPage === "form" && (
+                <Box>
                 <legend>
                     <h1>Login</h1>
                 </legend>
@@ -71,6 +77,13 @@ function Login(props) {
                         <input type="submit" value="Entrar" className='enviar'/><br/>
                     </form>
                 </fieldset>
+                </Box>
+            )}
+            {currentPage === "success" && (
+                <div>
+                    <Agenda/>
+                </div>
+            )}
             </Container>
 
             {/* Mensagem de feedback */}

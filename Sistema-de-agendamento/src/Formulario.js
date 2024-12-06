@@ -2,12 +2,11 @@ import React from 'react';
 import { useState } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import axios from "axios";
-//import Calendario from './Calendario';
-import Agenda from './Agenda';
 import Calendario from './Calendario';
 
 function Formulario() {
@@ -61,7 +60,6 @@ function Formulario() {
                 <Grid container spacing={2}>
                     <Grid size={6}>
                     <legend>
-                        <br/>
                         <h1>Solicite um agendamento!</h1>
                         <h2>Agende a verificação de seu veículo tanque rodoviário.</h2>
                     </legend>
@@ -91,13 +89,17 @@ function Formulario() {
                                                 <select id="veiculo" className='caixatexto'>
                                                     <option value="S">Sim</option>
                                                     <option value="N">Não</option>
-                                                </select><br/>'
+                                                </select><br/>
                                             </Grid>
 
                                             <Grid>
-                                                <label for="dt">Data</label><br/>
-                                                <input type="date" id="dt" className='caixatexto'
-                                                onChange={(e) => setDt(e.target.value)}></input><br/>
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DatePicker
+                                                    label="Controlled picker"
+                                                    value={dt}
+                                                    onChange={(e) => setDt(e.target.value)}
+                                                    />
+                                                </LocalizationProvider>
                                             </Grid>
                                         </Grid>
                                     </Grid>
@@ -130,11 +132,9 @@ function Formulario() {
                     </Grid>
             
                     <Grid size={6}>
-                        <br/>
                         <h2 id='cor'>Cheque as datas disponíveis para verificação</h2>
                         <p>As verificações podem acontecer de segunda à sexta, das 08:00 até 12:00 e da 13:00 até às 17:00.
                          A data pode ser agendada, mas o horário funciona por ordem de chegada.</p>
-                         {/*tem q mudar isso aí*/}
                         <Calendario/>
                     </Grid>
                 </Grid>

@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
+import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function Menu({isLoggedIn, controlaClique}) {
@@ -30,6 +31,7 @@ function Menu({isLoggedIn, controlaClique}) {
                                         <Button
                                             id='Logout'
                                             variant="link"
+                                            startIcon ={<LogoutIcon color='danger'/>}
                                             onClick={(event) => {   controlaClique(event.target.id); }}
                                         >
                                             Logout

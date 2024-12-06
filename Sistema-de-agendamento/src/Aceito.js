@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import { Alert, Box, Snackbar, Stack, TextField, Button } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
-import { headerFilteringStateInitializer } from '@mui/x-data-grid/internals';
 
 const colunas = [
     { field: "placa", headerName: "Placa", width: 140 },

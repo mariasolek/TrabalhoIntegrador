@@ -11,7 +11,6 @@ import Login from './Login';
 import Agenda from './Agenda';
 import Calendario from './Calendario';
 import Documentos from './Documentos';
-import Pendencias from './Pendencias';
 import Solicitacao from './Solicitacao';
 import DocumentosNovo from './DocumentosNovo';
 import Aceitas from './Aceito';
@@ -35,6 +34,11 @@ function App() {
 			setIsLoggedIn(true);
 		}
 	}, []);
+
+	const handleLogin = (status) => {
+		setIsLoggedIn(status); // Atualiza o estado de login
+	};
+	
 
 	const handleLogout = () => {
 		// Clear the token from localStorage
@@ -74,9 +78,9 @@ function App() {
 			<Menu controlaClique={controlaInterface} />
 			<Grid container justifyContent="center" spacing={2}>
 			{exibeLogin ? (
-						<Login/>
+						<Login handleLogin={handleLogin}/>
 					) : (
-				<Aceitas/>
+				<Solicitacao/>
 				)}
 			</Grid>
         </div>

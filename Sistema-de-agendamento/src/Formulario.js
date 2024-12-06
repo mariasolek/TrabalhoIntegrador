@@ -109,7 +109,7 @@ function Formulario() {
                                         <input type="number" id="setas-ad" placeholder="Digite aqui" className='caixatexto'
                                         onChange={(e) => setSetasAdc(e.target.value)}></input><br/><br/>
 
-                                        <input type="submit" placeholder="enviar" className='enviar' id="enviarform"></input><br/>
+                                        <input type="submit" placeholder="enviar" className='enviar' id="enviarform" ></input><br/>
                                     </Grid>
                                     </Grid>
                             </form>

@@ -65,6 +65,26 @@ fieldset {
     margin-left: 500px;
 }
 
+
+.headeragenda {
+    padding: 10px;
+    color: #EDF0F3;
+    background-color: #003867;
+    border-radius: 2px;
+}
+
+#botaovoltar {
+    background-color: #003867;
+    color: #ffffff;
+    padding: 10px;
+    margin-top: 86px;
+    border-radius: 4px;
+}
+
+#afasta {
+    padding-left: 11px;
+}
+
 #enviargru {
     margin-left: 200px;
     margin-top: 300px;

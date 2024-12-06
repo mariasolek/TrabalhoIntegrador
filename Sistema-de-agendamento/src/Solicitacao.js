@@ -1,6 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Agenda from './Agenda';
 
 function checkFileSize() {
@@ -39,12 +40,6 @@ function Solicitacao() {
             {currentPage === "solicit" && (
             <Grid container spacing={40}>
                 <Grid>
-                    <Button
-                        variant="link"
-                        onClick={() => setCurrentPage("voltar")}
-                    >
-                        Voltar
-                    </Button>
                     <h1>Dados da solicitação</h1><br/>
                     <p>
                         Proprietário do veículo:{nome}<br/>
@@ -57,13 +52,21 @@ function Solicitacao() {
                         Número de compartimentos:{n_comp}<br/>
                         {/*documentos*/}
                     </p>
+                    <Button
+                        id='botaovoltar'
+                        variant="link"
+                        startIcon={<ArrowBackIcon/>}
+                        onClick={() => setCurrentPage("voltar")}
+                    >
+                        Voltar
+                    </Button>
                 </Grid>
                 <Grid>
                     <br/>
                     <label for="gru">Enviar GRU</label><br/>
                     <input type="file" id='fs' accept=".pdf" className='caixaarquivo'></input><br/>
 
-                    <input type='submit' id='enviargru' className='enviar' onClick={() => setCurrentPage("voltar")}></input> 7
+                    <input type='submit' id='enviargru' className='enviar' onClick={() => setCurrentPage("voltar")}></input> 
                     {/*setCurrentPage foi colocado aqui por motivos de TESTE, mais tarde quando pudermos realmente enviar se a solicitação foi aceita ou não
                     isso deve ser mudado seguindo o padrão do componente login !!!!*/}
                 </Grid>

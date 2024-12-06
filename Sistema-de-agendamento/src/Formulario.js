@@ -8,6 +8,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import axios from "axios";
 //import Calendario from './Calendario';
 import Agenda from './Agenda';
+import Calendario from './Calendario';
 
 function Formulario() {
 
@@ -22,6 +23,8 @@ function Formulario() {
     const [openMessage, setOpenMessage] = React.useState(false);
 	const [messageText, setMessageText] = React.useState("");
 	const [messageSeverity, setMessageSeverity] = React.useState("success");
+
+
 
     
     const handleSubmit =  async (event) => {
@@ -55,7 +58,7 @@ function Formulario() {
         <div>
             <Container fixed>
                 <Grid container spacing={2}>
-                    <Grid size={8}>
+                    <Grid size={6}>
                     <legend>
                         <br/>
                         <h1>Solicite um agendamento!</h1>
@@ -116,13 +119,13 @@ function Formulario() {
                         </fieldset>
                     </Grid>
             
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <br/>
                         <h2 id='cor'>Cheque as datas disponíveis para verificação</h2>
                         <p>As verificações podem acontecer de segunda à sexta, das 08:00 até 12:00 e da 13:00 até às 17:00.
                          A data pode ser agendada, mas o horário funciona por ordem de chegada.</p>
                          {/*tem q mudar isso aí*/}
-                        <Agenda/>
+                        <Calendario/>
                     </Grid>
                 </Grid>
             </Container>

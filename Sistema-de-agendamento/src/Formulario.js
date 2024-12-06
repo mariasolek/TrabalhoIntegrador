@@ -19,6 +19,7 @@ function Formulario() {
     const [volume, setVolume] = useState(''); 
     const [ncompartimento, setNcompartimento] = useState(''); 
     const [setasAdc, setSetasAdc] = useState(''); 
+    const [dt, setDt] = useState('');
 
     const [openMessage, setOpenMessage] = React.useState(false);
 	const [messageText, setMessageText] = React.useState("");
@@ -84,12 +85,21 @@ function Formulario() {
                                         <input type="text" id="tel-prop" placeholder="Digite aqui" className='caixatexto'
                                         onChange={(e) => setNcompartimento(e.target.value)}></input><br/>
 
-                                        <label for="veiculo">Veículo novo</label><br/>
-                                        <select id="veiculo" className='caixatexto'>
-                                            <option value="S">Sim</option>
-                                            <option value="N">Não</option>
-                                        </select><br/>
+                                        <Grid container spacing={3}>
+                                            <Grid>
+                                                <label for="veiculo">Veículo novo</label><br/>
+                                                <select id="veiculo" className='caixatexto'>
+                                                    <option value="S">Sim</option>
+                                                    <option value="N">Não</option>
+                                                </select><br/>'
+                                            </Grid>
 
+                                            <Grid>
+                                                <label for="dt">Data</label><br/>
+                                                <input type="date" id="dt" className='caixatexto'
+                                                onChange={(e) => setDt(e.target.value)}></input><br/>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
 
                                     <Grid size={6}>

@@ -2,12 +2,10 @@ import React from 'react';
 import { useState } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import axios from "axios";
 import Calendario from './Calendario';
+import axios from "axios";
+import { Today } from '@mui/icons-material';
+
 
 function Formulario() {
 
@@ -18,15 +16,14 @@ function Formulario() {
     const [volume, setVolume] = useState(''); 
     const [ncompartimento, setNcompartimento] = useState(''); 
     const [setasAdc, setSetasAdc] = useState(''); 
-    const [dt, setDt] = useState('');
+    const [dt, setDt] = React.useState(null);
 
     const [openMessage, setOpenMessage] = React.useState(false);
 	const [messageText, setMessageText] = React.useState("");
 	const [messageSeverity, setMessageSeverity] = React.useState("success");
 
+    const today = new Date().toISOString().split('T')[0];
 
-
-    
     const handleSubmit =  async (event) => {
         event.preventDefault();
 
@@ -52,7 +49,6 @@ function Formulario() {
 			setMessageSeverity("error");
     }
 };
-
 
     return(
         <div>
@@ -93,13 +89,9 @@ function Formulario() {
                                             </Grid>
 
                                             <Grid>
-                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DatePicker
-                                                    label="Controlled picker"
-                                                    value={dt}
-                                                    onChange={(e) => setDt(e.target.value)}
-                                                    />
-                                                </LocalizationProvider>
+                                                <label for="dt">Data</label><br/>
+                                                <input type="date" value="dt" min={today} className='caixatexto'
+                                                onChange={(e) => setDt(e.target.value)}></input><br/>
                                             </Grid>
                                         </Grid>
                                     </Grid>

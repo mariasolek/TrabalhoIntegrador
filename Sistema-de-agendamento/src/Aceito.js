@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import { Alert, Box, Snackbar, Stack, TextField, Button } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
-import { headerFilteringStateInitializer } from '@mui/x-data-grid/internals';
 
 const colunas = [
     { field: "placa", headerName: "Placa", width: 140 },
@@ -28,7 +27,7 @@ function Aceitas() {
     React.useEffect(() => {
         const getDados = async () => {
           try {
-            const response = await axios.get('https://localhost:3000/ver-aceitas'); 
+            const response = await axios.get('https://localhost:3001/ver-aceitas'); 
             setLinhas(response.data);
           } catch (err) {
             setError(err.message); 

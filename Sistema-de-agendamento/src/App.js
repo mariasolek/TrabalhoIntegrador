@@ -11,7 +11,6 @@ import Login from './Login';
 import Agenda from './Agenda';
 import Calendario from './Calendario';
 import Documentos from './Documentos';
-import Pendencias from './Pendencias';
 import Solicitacao from './Solicitacao';
 import DocumentosNovo from './DocumentosNovo';
 import Aceitas from './Aceito';

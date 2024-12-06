@@ -196,12 +196,7 @@ app.post("/cadastro_func", async (req, res) => {
 app.get("/solicitacoes_pendentes", async (req, res) => {
     try {
         const solicitacoes = await db.any(`
-            SELECT 
-                s.cod AS id,
-                s.placa,
-                v.vol_total AS volume,
-                p.nome AS empresa,
-                r.dt AS data
+            SELECT s.cod, s.placa, v.vol_total AS volume, p.nome AS empresa, r.dt AS data
             FROM solicitacao s
             JOIN veiculo v ON s.placa = v.placa
             JOIN proprietario p ON v.prop = p.email
@@ -217,22 +212,32 @@ app.get("/solicitacoes_pendentes", async (req, res) => {
 });
 
 
-
-
-app.get("/solicitacao", requireJWTAuth, async (req, res) => {
+app.get("/solicitacao", async (req, res) => {
 	try {
-		const soliPlaca = parseInt(req.query.placa);
-		console.log(`Retornando solicitacao: ${soliPlaca}.`);
-		const solicitacao = await db.one(
-			"SELECT * FROM solicitacao WHERE placa = $1;",
-			[soliPlaca],
+		const solicod = parseInt(req.query.cod);
+		if (isNaN(solicod)) {
+			return res.status(400).json({ error: "Código inválido ou ausente." });
+		}
+		console.log(`Retornando solicitacao: ${solicod}.`);
+		const solicitacao = await db.one(`
+            SELECT p.nome as proprietario, r.dt as data, p.tel, p.email, vr.nome as tipo, s.placa, v.vol_total, v.num_comp 
+			FROM solicitacao as s JOIN reservas as r ON s.dt = r.cod
+			JOIN verificacao as vr ON vr.cod = s.tipo
+			JOIN veiculo as v ON s.placa = v.placa
+			JOIN proprietario as p ON v.prop = p.email
+			WHERE s.cod = $1;`, 
+			[solicod]
 		);
-		res.json(solicitacao).status(200);
+		res.status(200).json(solicitacao);
 	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
+		console.error(error);
+		if (error.message.includes("No data returned")) {
+			return res.status(404).json({ error: "Solicitação não encontrada." });
+		}
+		res.status(500).json({ error: "Erro interno do servidor." });
 	}
 });
+
 
 app.post("/cadastro_veiculo", async (req, res) => {
     try {

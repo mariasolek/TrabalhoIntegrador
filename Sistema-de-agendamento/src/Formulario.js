@@ -2,12 +2,8 @@ import React from 'react';
 import { useState } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import Calendario from './Calendario';
 import axios from "axios";
-//import Calendario from './Calendario';
-import Agenda from './Agenda';
 
 function Formulario() {
 
@@ -18,48 +14,53 @@ function Formulario() {
     const [volume, setVolume] = useState(''); 
     const [ncompartimento, setNcompartimento] = useState(''); 
     const [setasAdc, setSetasAdc] = useState(''); 
+    const [tipoVerificacao, settipoVerificacao] = useState(''); 
+    const [dt, setDt] = React.useState(null);
 
     const [openMessage, setOpenMessage] = React.useState(false);
 	const [messageText, setMessageText] = React.useState("");
 	const [messageSeverity, setMessageSeverity] = React.useState("success");
 
-    
+    const today = new Date().toISOString().split('T')[0];
+
     const handleSubmit =  async (event) => {
         event.preventDefault();
 
-        if (nome === '' || telefone === '' || email === ''  || placa === '' || volume === '' || ncompartimento === '' || setasAdc === '') {
-            alert('Preencha todos os campos');
+        if (!nome || !telefone || !email || !placa || !volume || !ncompartimento || !setasAdc || !dt) {
+            alert('Preencha todos os campos!');
             return;
         }
 
-        alert("Enviando os dados:" + nome + " - " + telefone + " - " + email + " - " + placa + " - " + volume + " - " + ncompartimento + " - " + setasAdc);
+        try {
+            const response = await axios.post('http://localhost:3001/formulario', {
+                nome,
+                telefone,
+                email,
+                placa,
+                volume,
+                ncompartimento,
+                setasAdc,
+                tipoVerificacao,
+                dt,
+            });
 
-        {/*ISSO TEM QUE ARRUMAR !*/}
-        try{ 
-            const response = await axios.post('http://localhost:3000/formulario', {
-            
-        }); 
-        if (response.data) {
-            alert(response.data);
+            if (response.data) {
+                alert(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao processar a solicitação!');
         }
-    } catch (error) {
-        console.log(error);
-			setOpenMessage(true);
-			setMessageText("Falha ao logar usuário!");
-			setMessageSeverity("error");
-    }
-};
-
+    };
 
     return(
         <div>
             <Container fixed>
                 <Grid container spacing={2}>
-                    <Grid size={8}>
+                    <Grid size={6}>
                     <legend>
-                        <br/>
                         <h1>Solicite um agendamento!</h1>
-                        <h2>Agende a verificação de seu veículo tanque rodoviário.</h2>
+                        <h3>Agende a verificação de seu veículo tanque rodoviário.</h3>
                     </legend>
                     <fieldset>
                         <form onSubmit={handleSubmit}> 
@@ -81,12 +82,21 @@ function Formulario() {
                                         <input type="text" id="tel-prop" placeholder="Digite aqui" className='caixatexto'
                                         onChange={(e) => setNcompartimento(e.target.value)}></input><br/>
 
-                                        <label for="veiculo">Veículo novo</label><br/>
-                                        <select id="veiculo" className='caixatexto'>
-                                            <option value="S">Sim</option>
-                                            <option value="N">Não</option>
-                                        </select><br/>
+                                        <Grid container spacing={3}>
+                                            <Grid>
+                                                <label for="veiculo">Veículo novo</label><br/>
+                                                <select id="veiculo" className='caixatexto'>
+                                                    <option value="S">Sim</option>
+                                                    <option value="N">Não</option>
+                                                </select><br/>
+                                            </Grid>
 
+                                            <Grid>
+                                                <label for="dt">Data</label><br/>
+                                                <input type="date" value="dt" min={today} className='caixatexto'
+                                                onChange={(e) => setDt(e.target.value)}></input><br/>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
 
                                     <Grid size={6}>
@@ -95,7 +105,9 @@ function Formulario() {
                                         onChange={(e) => setTelefone(e.target.value)}></input><br/>
 
                                         <label for="tipo-verif">Tipo de Verificação</label><br/>
-                                        <select id="tipo-verif" className='caixatexto'> 
+                                        <select id="tipo-verif" className='caixatexto'
+                                        onChange={(e) => settipoVerificacao(e.target.value)}> 
+                                            <option value="" disabled>Selecione</option>
                                             <option value="1">Inicial</option>
                                             <option value="2">Periódica</option>
                                             <option value="3">Pós-reparo</option>
@@ -109,20 +121,18 @@ function Formulario() {
                                         <input type="number" id="setas-ad" placeholder="Digite aqui" className='caixatexto'
                                         onChange={(e) => setSetasAdc(e.target.value)}></input><br/><br/>
 
-                                        <input type="submit" placeholder="enviar" className='enviar' id="enviarform"></input><br/>
+                                        <input type="submit" placeholder="enviar" className='enviar' id="enviarform" ></input><br/>
                                     </Grid>
                                     </Grid>
                             </form>
                         </fieldset>
                     </Grid>
             
-                    <Grid size={4}>
-                        <br/>
+                    <Grid size={6}>
                         <h2 id='cor'>Cheque as datas disponíveis para verificação</h2>
                         <p>As verificações podem acontecer de segunda à sexta, das 08:00 até 12:00 e da 13:00 até às 17:00.
                          A data pode ser agendada, mas o horário funciona por ordem de chegada.</p>
-                         {/*tem q mudar isso aí*/}
-                        <Agenda/>
+                        <Calendario/>
                     </Grid>
                 </Grid>
             </Container>

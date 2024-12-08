@@ -1,129 +1,97 @@
-import * as React from 'react';
+import React from 'react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid2';
 import dayjs from 'dayjs';
-import Badge from '@mui/material/Badge';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import axios from 'axios';
-import { createTheme } from '@mui/material/styles'
 
-const newTheme = (theme) => createTheme({
-  ...theme,
-  components: {
-    MuiDateCalendar: {
-      styleOverrides: {
-        root: {
-          color: '#FFFFFF',
-          borderRadius: '2px',
-          borderWidth: '1px',
-          borderColor: '#e91e63',
-          border: '1px solid',
-          backgroundColor: '#003867',
-        }
-      }
+import 'dayjs/locale/pt-br';
+dayjs.locale('pt-br');
+
+function Calendario() {
+    const currentDate = dayjs();
+    const daysInMonth = currentDate.daysInMonth();
+    const firstDayOfMonth = currentDate.startOf('month').day(); // dia da semana do primeiro dia (0=domingo, 6=sábado)
+
+    const daysArray = Array.from({ length: daysInMonth }, (_, index) => {
+        return {
+            date: currentDate.startOf('month').add(index, 'day'),
+            day: index + 1,
+        };
+    });
+
+    
+    const emptyDays = Array.from({ length: firstDayOfMonth }, () => null);
+
+    
+    const allDays = [...emptyDays, ...daysArray];
+
+    const weeks = [];
+    for (let i = 0; i < allDays.length; i += 7) {
+        weeks.push(allDays.slice(i, i + 7));
     }
-  }
-})
 
-async function realFetch(date, { signal }) {
-    try {
-      const formattedDate = date.format('YYYY-MM'); // Exemplo: "2022-04"
+        // Estado para dias indisponíveis
+        const [diasIndisponiveis, setDiasIndisponiveis] = React.useState([]);
 
-      const response = await axios.get(`https://localhost:3000/Calendario`, {
-        params: { month: formattedDate },
-        signal, // AbortController funciona com Axios v1.2.0 ou superior
-      });
-  
-      return response.data; // Exemplo: { daysToHighlight: [1, 2, 3] }
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Requisição cancelada');
-      } else {
-        console.error('Erro na requisição:', error);
-      }
-      throw error;
-    }
-  }
+        const fetchDiasIndisponiveis = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/dias-indisponiveis'); // Verifique a URL
+                setDiasIndisponiveis(response.data.map((date) => dayjs(date).date())); // Ajuste o formato conforme necessário
+                console.log('Resposta do backend:', response.data);
+                console.log('Dias indisponíveis:', diasIndisponiveis);
 
-const initialValue = dayjs();
+            } catch (error) {
+                console.error('Erro ao buscar dias indisponíveis:', error);
+                {/*alert('Não foi possível carregar os dias indisponíveis.');*/}
+            }
+        };
+    
+        // Chamada inicial para buscar os dias indisponíveis
+        React.useEffect(() => {
+            fetchDiasIndisponiveis();
+        }, []);
+    
 
-function ServerDay(props) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+    return (
+        <div>
+            <Grid container fixed>
+                <Grid>
+                    <h2 id='txtcalend'>Calendário - {currentDate.format('MMMM YYYY')}</h2>
+                    <Box sx={{width:"520px"}}>
+                    <Grid container spacing={5.3} className="headeragenda">
+                        {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'].map((day) => (
+                            <Grid item xs={1.71} key={day}>
+                                <Box textAlign="center">{day}</Box>
+                            </Grid>
+                        ))}
+                    </Grid>
 
-  const isSelected =
-    !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
-
-  return (
-    <Badge
-      key={props.day.toString()}
-      overlap="circular"
-      badgeContent={isSelected ? '🌚' : undefined}
-    >
-      <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
-    </Badge>
-  );
+                    {weeks.map((week, index) => (
+                        <Grid container key={index}>
+                            {week.map((day, idx) => (
+                                <Grid item xs={1.71} key={idx}>
+                                    <Box textAlign="center">
+                                        {day ? (
+                                            <Button
+                                                sx={{margin:'5px', paddingTop:'10px', paddingBottom:'10px'}}
+                                                color={diasIndisponiveis.includes(day.day) ? 'error' : 'primary'}
+                                            >
+                                                {day.day}
+                                            </Button>
+                                        ) : (
+                                            <div></div> // Espaço vazio para os dias anteriores ao mês
+                                        )}
+                                    </Box>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    ))}
+                </Box>
+                </Grid>
+            </Grid>
+        </div>
+    );
 }
 
-export default function Calendario() {
-  const requestAbortController = React.useRef(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
-
-  const fetchHighlightedDays = (date) => {
-    const controller = new AbortController();
-    realFetch(date, {
-      signal: controller.signal,
-    })
-      .then(({ daysToHighlight }) => {
-        setHighlightedDays(daysToHighlight);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
-        if (error.name !== 'AbortError') {
-          throw error;
-        }
-      });
-
-    requestAbortController.current = controller;
-  };
-
-  React.useEffect(() => {
-    fetchHighlightedDays(initialValue);
-    // abort request on unmount
-    return () => requestAbortController.current?.abort();
-  }, []);
-
-  const handleMonthChange = (date) => {
-    if (requestAbortController.current) {
-      // make sure that you are aborting useless requests
-      // because it is possible to switch between months pretty quickly
-      requestAbortController.current.abort();
-    }
-
-    setIsLoading(true);
-    setHighlightedDays([]);
-    fetchHighlightedDays(date);
-  };
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateCalendar
-        defaultValue={initialValue}
-        loading={isLoading}
-        onMonthChange={handleMonthChange}
-        renderLoading={() => <DayCalendarSkeleton />}
-        slots={{
-          day: ServerDay,
-        }}
-        slotProps={{
-          day: {
-            highlightedDays,
-          },
-        }}
-      />
-    </LocalizationProvider>
-  );
-}
+export default Calendario;

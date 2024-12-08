@@ -10,9 +10,7 @@ import Cadastro from './Cadastro';
 import Login from './Login';
 import Agenda from './Agenda';
 import Calendario from './Calendario';
-import Documentos from './Documentos';
 import Solicitacao from './Solicitacao';
-import DocumentosNovo from './DocumentosNovo';
 import Aceitas from './Aceito';
 //import Button from '@mui/material/Button';
 
@@ -25,25 +23,64 @@ function App() {
 
 	const [exibeCadastro, setExibeCadastro] = React.useState(false);
 	const [exibeLogin, setExibeLogin] = React.useState(false);
+	const [exibeceito, setExibeAceito] = React.useState(false);
+	const [exibeAgenda, setExibeAgenda] = React.useState(false);
+	const [exibeDocumentos, setExibeDocumentos] = React.useState(false);
+	const [exibeDocumentosNovo, setExibeDocumentosNovo] = React.useState(false);
+	const [exibeDashboard, setExibeDashboard] = React.useState(false);
 	const [exibeFormulario, setExibeFormulario] = React.useState(false);
+	const [exibeSolicitacao, setExibeSolicitacao] = React.useState(false);
+	const [cargo, setCargo] = React.useState(null);
+
 
     React.useEffect(() => {
-		// verifica se já está logado
 		const token = localStorage.getItem("token");
 		if (token) {
-			setIsLoggedIn(true);
+		  setIsLoggedIn(true);
+		} else {
+		  handleLogout();
 		}
+		getCargo();
 	}, []);
+
+	{/*tem q rever isso aqui*/}
+	async function getCargo() {
+		try {
+		  const token = localStorage.getItem("token");
+		  const response = await axios.get("http://localhost:3001/login", {
+			headers: {
+			  Authorization: `Bearer ${token}`,
+			},
+		  });
+		  if (response.data.cargo) {
+			setCargo(response.data.cargo); // Atualiza o cargo com o valor do banco
+		  } else {
+			setCargo(null); // Define como null caso não haja um cargo válido
+		  }
+		} catch (error) {
+		  console.error("Erro ao buscar cargo:", error);
+		  setCargo(null);
+		}
+	  }
+	
 
 	const handleLogin = (status) => {
 		setIsLoggedIn(status); // Atualiza o estado de login
+		getCargo();
 	};
 	
-
 	const handleLogout = () => {
-		// Clear the token from localStorage
 		localStorage.removeItem("token");
 		setIsLoggedIn(false);
+		setExibeAceito(false);
+		setExibeAgenda(false);
+		setExibeCadastro(false);
+		setExibeDashboard(false);
+		setExibeDocumentos(false);
+		setExibeDocumentosNovo(false);
+		setExibeFormulario(true);
+		setExibeLogin(false);
+		setExibeSolicitacao(false);
 	};
 
 
@@ -51,40 +88,80 @@ function App() {
 		console.log(`Veio ${id}`); 
 		switch (id){
 			case 'cadastro':
+				setExibeAceito(false);
+				setExibeAgenda(false);
 				setExibeCadastro(true);
-				setExibeLogin(false);
+				setExibeDashboard(false);
+				setExibeDocumentos(false);
+				setExibeDocumentosNovo(false);
 				setExibeFormulario(false);
+				setExibeLogin(false);
+				setExibeSolicitacao(false);
 				break;
 			case 'login':
+				setExibeAceito(false);
+				setExibeAgenda(false);
 				setExibeCadastro(false);
-				setExibeLogin(true);
+				setExibeDashboard(false);
+				setExibeDocumentos(false);
+				setExibeDocumentosNovo(false);
 				setExibeFormulario(false);
+				setExibeLogin(true);
+				setExibeSolicitacao(false);
 				break;
 			case 'logout':
 				handleLogout();
+				setExibeAceito(false);
+				setExibeAgenda(false);
 				setExibeCadastro(false);
-				setExibeLogin(false);
+				setExibeDashboard(false);
+				setExibeDocumentos(false);
+				setExibeDocumentosNovo(false);
 				setExibeFormulario(true);
-			default:
-				setExibeCadastro(false);
 				setExibeLogin(false);
+				setExibeSolicitacao(false);
+				break;
+			 case 'solicitacao':
+				setExibeAceito(false);
+				setExibeAgenda(false);
+				setExibeCadastro(false);
+				setExibeDashboard(false);
+				setExibeDocumentos(false);
+				setExibeDocumentosNovo(false);
 				setExibeFormulario(false);
+				setExibeLogin(false);
+				setExibeSolicitacao(true);
+				break;
+			default:
+				setExibeAceito(false);
+				setExibeAgenda(false);
+				setExibeCadastro(false);
+				setExibeDashboard(false);
+				setExibeDocumentos(false);
+				setExibeDocumentosNovo(false);
+				setExibeFormulario(false);
+				setExibeLogin(false);
+				setExibeSolicitacao(false);
+				break;
 		}
 	}
 
-    return(
-        <div>
-			<CssBaseline />
-			<Menu controlaClique={controlaInterface} />
-			<Grid container justifyContent="center" spacing={2}>
-			{exibeLogin ? (
-						<Login handleLogin={handleLogin}/>
-					) : (
-				<Solicitacao/>
-				)}
-			</Grid>
-        </div>
-    )
+	return (
+		<div>
+		  <CssBaseline />
+		  <Menu controlaClique={controlaInterface} isLoggedIn={isLoggedIn} getCargo={getCargo} />
+		  <Grid container justifyContent="center" spacing={2}>
+			{isLoggedIn ? (
+			  <Agenda />
+			) : exibeLogin ? (
+			  <Login handleLogin={handleLogin}/>
+			) : (
+			  <Formulario />
+			)}
+		  </Grid>
+		</div>
+	  );
+	  
 }
 
 export default App;

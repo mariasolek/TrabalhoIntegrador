@@ -2,12 +2,12 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid2';
 import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
 import axios from 'axios';
-import { Alert, Box, Snackbar, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import Solicitacao from './Solicitacao';
 
+import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 const colunas = [
@@ -85,7 +85,7 @@ function Agenda() {
                 <Grid container spacing={20}>
                     {/* Agenda */}
                     <Grid item xs={8}>
-                        <h1>Agenda - {currentDate.format('MMMM YYYY')}</h1>
+                        <h1>Agenda - {currentDate.format('MMMM YYYY')}</h1><br/>
                         <Box>
                             <Grid container spacing={8} className="headeragenda">
                                 {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'].map((day) => (

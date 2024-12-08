@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid2';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Agenda from './Agenda';
 
 function Cadastro() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = React.useState({
         cod: '',
         nome: '',
         senha: '',
@@ -11,6 +14,8 @@ function Cadastro() {
         email: '',
         cargo: ''
     });
+
+    const [currentPage, setCurrentPage] = React.useState("cadastro");
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -50,8 +55,20 @@ function Cadastro() {
 
     return (
         <div>
-            <Box>
-                <Container fixed>
+            {currentPage === "cadastro" && ( 
+            <Container fixed>
+                <Grid container spacing={2}>
+                    <Grid>
+                        <Button
+                            variant="link"
+                            startIcon={<ArrowBackIcon/>}
+                            onClick={() => setCurrentPage("voltar")}
+                            id="botaovoltar2"
+                        >
+                            Voltar para agenda
+                        </Button>
+                    </Grid>
+                    <Grid>
                     <legend>
                         <h1>Cadastro de funcionário</h1>
                     </legend>
@@ -84,8 +101,13 @@ function Cadastro() {
                             <input type="submit" placeholder="Cadastrar" className="enviar" /><br />
                         </form>
                     </fieldset>
-                </Container>
-            </Box>
+                    </Grid>
+                </Grid>
+            </Container>
+            )}
+            {currentPage === "voltar" && ( 
+                <Agenda/>
+            )}
         </div>
     );
 }

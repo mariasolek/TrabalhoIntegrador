@@ -4,8 +4,6 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
 import Calendario from './Calendario';
 import axios from "axios";
-import { Today } from '@mui/icons-material';
-
 
 function Formulario() {
 
@@ -57,7 +55,7 @@ function Formulario() {
                     <Grid size={6}>
                     <legend>
                         <h1>Solicite um agendamento!</h1>
-                        <h2>Agende a verificação de seu veículo tanque rodoviário.</h2>
+                        <h3>Agende a verificação de seu veículo tanque rodoviário.</h3>
                     </legend>
                     <fieldset>
                         <form onSubmit={handleSubmit}> 

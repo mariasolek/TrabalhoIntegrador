@@ -28,22 +28,29 @@ function Menu({ isLoggedIn, controlaClique, cargo }) {
                   )}
                   <Button
                     id="Logout"
-                    variant="contained"
-                    startIcon={<LogoutIcon />}
-                    onClick={(event) => controlaClique(event.target.id)}
+                    variant="link"
+                    startIcon={<LogoutIcon color="danger" />}
+                    onClick={(event) => {
+                      controlaClique(event.target.id);
+                    }}
                   >
                     Logout
                   </Button>
                 </Grid>
               ) : (
-                <Button
-                  id="Login"
-                  variant="contained"
-                  startIcon={<AccountCircleIcon />}
-                  onClick={(event) => controlaClique(event.target.id)}
-                >
-                  Login
-                </Button>
+                <Grid>
+                  <Button
+                    id="Login"
+                    variant="link"
+                    size="large"
+                    startIcon={<AccountCircleIcon color="primary" />}
+                    onClick={(event) => {
+                      controlaClique(event.target.id);
+                    }}
+                  >
+                    Login
+                  </Button>
+                </Grid>
               )}
             </Grid>
           </Grid>

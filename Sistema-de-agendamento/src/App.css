@@ -67,6 +67,10 @@ fieldset {
     border-radius: 2px;
 }
 
+#ajustebotao {
+    margin-top: 20px;
+}
+
 #txtcalend {
     color: #003867;
 }
@@ -84,7 +88,7 @@ fieldset {
     color: #ffffff;
     padding: 10px;
     border-radius: 4px;
-    margin-top: 550px;
+    margin-top: 20px;
 }
 
 #afasta {

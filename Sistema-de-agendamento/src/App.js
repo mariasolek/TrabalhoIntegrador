@@ -37,13 +37,13 @@ function App() {
 		const token = localStorage.getItem("token");
 		if (token) {
 		  setIsLoggedIn(true);
+		  getCargo();
 		} else {
 		  handleLogout();
 		}
 		getCargo();
 	}, []);
 
-	{/*tem q rever isso aqui*/}
 	async function getCargo() {
 		try {
 		  const token = localStorage.getItem("token");
@@ -52,25 +52,32 @@ function App() {
 			  Authorization: `Bearer ${token}`,
 			},
 		  });
-		  if (response.data.cargo) {
-			setCargo(response.data.cargo); // Atualiza o cargo com o valor do banco
+	  
+		  // SOCORRO ALEX !!
+		  const userCargo = response.data.cargo?.nome;
+	  
+		  if (userCargo) {
+			setCargo(userCargo); 
+			console.log(`Cargo definido: ${userCargo}`); 
 		  } else {
-			setCargo(null); // Define como null caso não haja um cargo válido
+			setCargo(null);
+			console.warn("Cargo não encontrado.");
 		  }
 		} catch (error) {
 		  console.error("Erro ao buscar cargo:", error);
-		  setCargo(null);
+		  setCargo(null); 
 		}
 	  }
-	
+	  
 
 	const handleLogin = (status) => {
-		setIsLoggedIn(status); // Atualiza o estado de login
+		setIsLoggedIn(status); 
 		getCargo();
 	};
 	
 	const handleLogout = () => {
 		localStorage.removeItem("token");
+		setCargo(null);
 		setIsLoggedIn(false);
 		setExibeAceito(false);
 		setExibeAgenda(false);
@@ -84,10 +91,10 @@ function App() {
 	};
 
 
-    function controlaInterface(id) { //teste
+    function controlaInterface(id) { 
 		console.log(`Veio ${id}`); 
 		switch (id){
-			case 'cadastro':
+			case 'Cadastro':
 				setExibeAceito(false);
 				setExibeAgenda(false);
 				setExibeCadastro(true);
@@ -98,7 +105,7 @@ function App() {
 				setExibeLogin(false);
 				setExibeSolicitacao(false);
 				break;
-			case 'login':
+			case 'Login':
 				setExibeAceito(false);
 				setExibeAgenda(false);
 				setExibeCadastro(false);
@@ -109,7 +116,7 @@ function App() {
 				setExibeLogin(true);
 				setExibeSolicitacao(false);
 				break;
-			case 'logout':
+			case 'Logout':
 				handleLogout();
 				setExibeAceito(false);
 				setExibeAgenda(false);
@@ -120,17 +127,6 @@ function App() {
 				setExibeFormulario(true);
 				setExibeLogin(false);
 				setExibeSolicitacao(false);
-				break;
-			 case 'solicitacao':
-				setExibeAceito(false);
-				setExibeAgenda(false);
-				setExibeCadastro(false);
-				setExibeDashboard(false);
-				setExibeDocumentos(false);
-				setExibeDocumentosNovo(false);
-				setExibeFormulario(false);
-				setExibeLogin(false);
-				setExibeSolicitacao(true);
 				break;
 			default:
 				setExibeAceito(false);

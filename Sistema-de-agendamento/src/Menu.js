@@ -6,64 +6,51 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function Menu({ isLoggedIn, controlaClique, cargo }) {
-  return (
-    <div>
+    return (
       <Box>
         <header>
-          <Grid container>
-            <Grid>
-              <div>
-                <img src="logo.png" alt="Logo do IMETRO-SC" id="logo"></img>
-              </div>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <img src="logo.png" alt="Logo do IMETRO-SC" id="logo" />
             </Grid>
-
-            <Grid>
-              <br />
+            <Grid item>
               {isLoggedIn ? (
-                <Grid>
+                <Grid container spacing={2} alignItems="center">
+                  {/* Renderiza o botão Cadastro apenas se o cargo for Administrador */}
                   {cargo === "Administrador" && (
                     <Button
-                      id="Cadastro"
-                      variant="link"
-                      onClick={(event) => {
-                        controlaClique(event.target.id);
-                      }}
+                      id="Cadastro" // Ajustado para corresponder à lógica de `controlaInterface`
+                      variant="contained"
+                      onClick={(event) => controlaClique(event.target.id)}
                     >
                       Cadastro
                     </Button>
                   )}
                   <Button
-                    id="logout"
-                    variant="link"
-                    startIcon={<LogoutIcon color="danger" />}
-                    onClick={(event) => {
-                      controlaClique(event.target.id);
-                    }}
+                    id="Logout"
+                    variant="contained"
+                    startIcon={<LogoutIcon />}
+                    onClick={(event) => controlaClique(event.target.id)}
                   >
                     Logout
                   </Button>
                 </Grid>
               ) : (
-                <Grid>
-                  <Button
-                    id="login"
-                    variant="link"
-                    size="large"
-                    startIcon={<AccountCircleIcon color="primary" />}
-                    onClick={(event) => {
-                      controlaClique(event.target.id);
-                    }}
-                  >
-                    Login
-                  </Button>
-                </Grid>
+                <Button
+                  id="Login"
+                  variant="contained"
+                  startIcon={<AccountCircleIcon />}
+                  onClick={(event) => controlaClique(event.target.id)}
+                >
+                  Login
+                </Button>
               )}
             </Grid>
           </Grid>
         </header>
       </Box>
-    </div>
-  );
-}
+    );
+  }
+  
 
 export default Menu;

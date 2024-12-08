@@ -35,48 +35,26 @@ function App() {
 
     React.useEffect(() => {
 		const token = localStorage.getItem("token");
-		if (token) {
+		const storedCargo = localStorage.getItem("cargo"); //atualizei Login pra enviar o cargo da pessoa que logou
+		if (token && storedCargo) {
+			console.log("Cargo carregado do localStorage:", storedCargo);
 		  setIsLoggedIn(true);
-		  getCargo();
+		  setCargo(storedCargo);
 		} else {
 		  handleLogout();
 		}
-		getCargo();
 	}, []);
-
-	async function getCargo() {
-		try {
-		  const token = localStorage.getItem("token");
-		  const response = await axios.get("http://localhost:3001/login", {
-			headers: {
-			  Authorization: `Bearer ${token}`,
-			},
-		  });
-	  
-		  // SOCORRO ALEX !!
-		  const userCargo = response.data.cargo?.nome;
-	  
-		  if (userCargo) {
-			setCargo(userCargo); 
-			console.log(`Cargo definido: ${userCargo}`); 
-		  } else {
-			setCargo(null);
-			console.warn("Cargo não encontrado.");
-		  }
-		} catch (error) {
-		  console.error("Erro ao buscar cargo:", error);
-		  setCargo(null); 
-		}
-	  }
 	  
 
 	const handleLogin = (status) => {
+		const storedCargo = localStorage.getItem("cargo"); //precisa ser assim se não não atualiza na hora
 		setIsLoggedIn(status); 
-		getCargo();
+		setCargo(storedCargo);
 	};
 	
 	const handleLogout = () => {
 		localStorage.removeItem("token");
+		localStorage.removeItem("cargo");
 		setCargo(null);
 		setIsLoggedIn(false);
 		setExibeAceito(false);
@@ -91,7 +69,7 @@ function App() {
 	};
 
 
-    function controlaInterface(id) { 
+    function controlaInterface(id) { //teste
 		console.log(`Veio ${id}`); 
 		switch (id){
 			case 'Cadastro':
@@ -128,6 +106,17 @@ function App() {
 				setExibeLogin(false);
 				setExibeSolicitacao(false);
 				break;
+			 case 'solicitacao':
+				setExibeAceito(false);
+				setExibeAgenda(false);
+				setExibeCadastro(false);
+				setExibeDashboard(false);
+				setExibeDocumentos(false);
+				setExibeDocumentosNovo(false);
+				setExibeFormulario(false);
+				setExibeLogin(false);
+				setExibeSolicitacao(true);
+				break;
 			default:
 				setExibeAceito(false);
 				setExibeAgenda(false);
@@ -145,10 +134,12 @@ function App() {
 	return (
 		<div>
 		  <CssBaseline />
-		  <Menu controlaClique={controlaInterface} isLoggedIn={isLoggedIn} getCargo={getCargo} />
+		  <Menu controlaClique={controlaInterface} isLoggedIn={isLoggedIn} cargo={cargo} />
 		  <Grid container justifyContent="center" spacing={2}>
-			{isLoggedIn ? (
-			  <Agenda />
+			{isLoggedIn && exibeCadastro ? (
+				<Cadastro />
+			): isLoggedIn ? (
+				<Agenda />
 			) : exibeLogin ? (
 			  <Login handleLogin={handleLogin}/>
 			) : (

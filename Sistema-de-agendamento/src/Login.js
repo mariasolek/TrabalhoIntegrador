@@ -25,15 +25,14 @@ function Login(props) {
            
     
             if (response.status >= 200 && response.status < 300) {
-				// Salva o token JWT na sessão
+				//salva o token e cargo na sessão
 				localStorage.setItem("token", response.data.token);
-				// seta o estado do login caso tudo deu certo
+                localStorage.setItem("cargo", response.data.cargo);
+				//seta o estado do login caso tudo deu certo
 				props.handleLogin(true);
 				console.log(props.user);
-                alert("login realizado com sucesso!")
                 setCurrentPage("success");
 			} else {
-				// falha
 				console.error("Falha na autenticação");
 			}
         } catch (error) {

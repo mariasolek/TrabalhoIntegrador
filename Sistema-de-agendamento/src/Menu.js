@@ -6,22 +6,29 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function Menu({ isLoggedIn, controlaClique, cargo }) {
-    return (
+  console.log("Valor do cargo: ", cargo);
+  return (
+    <div>
       <Box>
         <header>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item>
-              <img src="logo.png" alt="Logo do IMETRO-SC" id="logo" />
+          <Grid container>
+            <Grid>
+              <div>
+                <img src="logo.png" alt="Logo do IMETRO-SC" id="logo"></img>
+              </div>
             </Grid>
-            <Grid item>
+
+            <Grid>
+              <br />
               {isLoggedIn ? (
-                <Grid container spacing={2} alignItems="center">
-                  {/* Renderiza o botão Cadastro apenas se o cargo for Administrador */}
-                  {cargo === "Administrador" && (
+                <Grid>
+                  {cargo === "1" && ( //ta controlando pelo cod de cargo agr
                     <Button
-                      id="Cadastro" // Ajustado para corresponder à lógica de `controlaInterface`
-                      variant="contained"
-                      onClick={(event) => controlaClique(event.target.id)}
+                      id="Cadastro"
+                      variant="link"
+                      onClick={(event) => {
+                        controlaClique(event.target.id);
+                      }}
                     >
                       Cadastro
                     </Button>
@@ -56,8 +63,8 @@ function Menu({ isLoggedIn, controlaClique, cargo }) {
           </Grid>
         </header>
       </Box>
-    );
-  }
-  
+    </div>
+  );
+}
 
 export default Menu;

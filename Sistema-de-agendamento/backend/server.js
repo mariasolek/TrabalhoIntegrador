@@ -116,19 +116,39 @@ const requireJWTAuth = passport.authenticate("jwt", { session: false });
 app.listen(3001, () => console.log("Servidor rodando na porta 3001."));
 
 app.post(
-	"/login",
-	passport.authenticate("local", { session: false }),
-	(req, res) => {
+    "/login",
+    passport.authenticate("local", { session: false }),
+    async (req, res) => {
+        const user = req.user;
+        if (!user) {
+            return res.status(400).json({ message: "Usuário não autenticado" });
+        }
 
-        // Gera o token JWT
-        const token = jwt.sign({ codigo: req.body.codigo }, "your-secret-key", {
-            expiresIn: "1h",
-        });
-        console.log("Token gerado:", token);
+        try {
+            //procura o cargo no banco
+            const result = await db.one('SELECT cargo FROM funcionario WHERE cod = $1;', [user.cod]);
+            if (!result) {
+                return res.status(404).json({ message: "Usuário não encontrado no banco de dados" });
+            }
+            const cargo = result.cargo;
+            console.log("Cargo:", cargo); //pra teste
 
-        return res.json({ message: "Login bem-sucedido", token: token });
-    },
-)
+            // Gera o token JWT com o código do usuário e o cargo
+            const token = jwt.sign({ codigo: user.cod, cargo: cargo }, "your-secret-key", {
+                expiresIn: "1h",
+            });
+
+            console.log("Token gerado:", token); //pra teste
+
+            //retorna o token e o cargo na resposta
+            return res.json({ message: "Login bem-sucedido", token: token, cargo: cargo });
+        } catch (error) {
+            console.error("Erro ao consultar banco:", error);
+            return res.status(500).json({ message: "Erro ao processar o login" });
+        }
+    }
+);
+
 
 app.post("/logout", function (req, res, next) {
 	req.logout(function (err) {
@@ -143,7 +163,7 @@ app.get("/", (req, res) => {
 	res.send("Hello, world!");
 });
 
-app.get("/funcionarios", requireJWTAuth, async (req, res) => {
+app.get("/funcionarios", async (req, res) => {
 	try {
 		const funcionarios = await db.any("SELECT * FROM funcionario;");
 		console.log("Retornando todos os funcionários.");
@@ -154,7 +174,7 @@ app.get("/funcionarios", requireJWTAuth, async (req, res) => {
 	}
 });
 
-app.get("/funcionario", requireJWTAuth, async (req, res) => {
+app.get("/funcionario", async (req, res) => {
 	try {
 		const funcionarioCod = parseInt(req.query.cod);
 		console.log(`Retornando funcionário: ${funcionarioCod}.`);
@@ -196,12 +216,7 @@ app.post("/cadastro_func", async (req, res) => {
 app.get("/solicitacoes_pendentes", async (req, res) => {
     try {
         const solicitacoes = await db.any(`
-            SELECT 
-                s.cod AS id,
-                s.placa,
-                v.vol_total AS volume,
-                p.nome AS empresa,
-                r.dt AS data
+            SELECT s.cod, s.placa, v.vol_total AS volume, p.nome AS empresa, r.dt AS data
             FROM solicitacao s
             JOIN veiculo v ON s.placa = v.placa
             JOIN proprietario p ON v.prop = p.email
@@ -217,22 +232,32 @@ app.get("/solicitacoes_pendentes", async (req, res) => {
 });
 
 
-
-
-app.get("/solicitacao", requireJWTAuth, async (req, res) => {
+app.get("/solicitacao", async (req, res) => {
 	try {
-		const soliPlaca = parseInt(req.query.placa);
-		console.log(`Retornando solicitacao: ${soliPlaca}.`);
-		const solicitacao = await db.one(
-			"SELECT * FROM solicitacao WHERE placa = $1;",
-			[soliPlaca],
+		const solicod = parseInt(req.query.cod);
+		if (isNaN(solicod)) {
+			return res.status(400).json({ error: "Código inválido ou ausente." });
+		}
+		console.log(`Retornando solicitacao: ${solicod}.`);
+		const solicitacao = await db.one(`
+            SELECT p.nome as proprietario, r.dt as data, p.tel, p.email, vr.nome as tipo, s.placa, v.vol_total, v.num_comp 
+			FROM solicitacao as s JOIN reservas as r ON s.dt = r.cod
+			JOIN verificacao as vr ON vr.cod = s.tipo
+			JOIN veiculo as v ON s.placa = v.placa
+			JOIN proprietario as p ON v.prop = p.email
+			WHERE s.cod = $1;`, 
+			[solicod]
 		);
-		res.json(solicitacao).status(200);
+		res.status(200).json(solicitacao);
 	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
+		console.error(error);
+		if (error.message.includes("No data returned")) {
+			return res.status(404).json({ error: "Solicitação não encontrada." });
+		}
+		res.status(500).json({ error: "Erro interno do servidor." });
 	}
 });
+
 
 app.post("/cadastro_veiculo", async (req, res) => {
     try {
@@ -308,5 +333,46 @@ app.post("/cadastro_proprietario", async (req, res) => {
     } catch (error) {
         console.log("Erro ao inserir no banco:", error); 
         res.sendStatus(400);
+    }
+});
+
+app.post('/formulario', async (req, res) => {
+    const { nome, telefone, email, placa, volume, ncompartimento, setasAdc, tipoVerificacao, dt } = req.body;
+
+    try {
+        // Verificar se o proprietário existe
+        const proprietario = await db.oneOrNone('SELECT * FROM proprietario WHERE email = $1', [email]);
+        if (!proprietario) {
+            // Inserir proprietário se não existir
+            await db.none('INSERT INTO proprietario(email, nome, tel) VALUES($1, $2, $3)', 
+                [email, nome, telefone]);
+        }
+
+        // Verificar se o veículo existe
+        const veiculo = await db.oneOrNone('SELECT * FROM veiculo WHERE placa = $1', [placa]);
+        if (!veiculo) {
+            // Inserir veículo se não existir
+            const insertVeiculoQuery = 'INSERT INTO veiculo(placa, vol_total, num_comp, set_ad, prop) VALUES($1, $2, $3, $4, $5)';
+            await db.none(insertVeiculoQuery, [placa, volume, ncompartimento, setasAdc, email]);
+        }
+
+        // Verificar se a data está disponível para reserva
+        const reserva = await db.oneOrNone('SELECT * FROM reservas WHERE dt = $1', [dt]);
+        const reservaId = reserva.cod
+        if (!reserva) {
+            // Inserir reserva se a data estiver disponível
+            const reservaResponse = await db.one('INSERT INTO reservas(cod, dt, status) VALUES(default, $1, $2)', [dt, 'reservado']);
+            const reservaId = reservaResponse.cod;
+            // Inserir solicitação
+        }
+            await db.none(`
+                INSERT INTO solicitacao(cod, status, tipo, placa, dt) 
+                VALUES(default, $1, $2, $3, $4)`, 
+                ['Pendente', tipoVerificacao, placa, reservaId]);
+            res.json({ message: 'Solicitação realizada com sucesso!' });
+        
+    } catch (error) {
+        console.error('Erro no processamento:', error);
+        res.status(500).json({ message: 'Erro ao inserir a solicitação no banco' });
     }
 });

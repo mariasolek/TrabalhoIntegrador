@@ -3,24 +3,6 @@ import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Agenda from './Agenda';
-
-function checkFileSize() {
-    const fs = document.getElementById("fs");
-    const files = fs.files;
-  
-    if (files.length > 0) {
-      if (files[0].size >  5 * 1024 * 1024) {
-        alert("Arquivo ultrapassa o tamanho máximo aceito (5MB)");
-        fs.reportValidity();
-        return;
-      }
-    }
-    fs.setCustomValidity("");
-  }
-
-  React.onload = () => {
-    document.getElementById("fs").onchange = checkFileSize;
-};
   
 
 function Solicitacao() {
@@ -63,8 +45,8 @@ function Solicitacao() {
                 </Grid>
                 <Grid>
                     <br/>
-                    <label for="gru">Enviar GRU</label><br/>
-                    <input type="file" id='fs' accept=".pdf" className='caixaarquivo'></input><br/>
+                    <label for="gru">Valor da GRU</label><br/>
+                    <input type="text" id='fs' className='caixaarquivo'></input><br/>
 
                     <input type='submit' id='enviargru' className='enviar' onClick={() => setCurrentPage("voltar")}></input> 
                     {/*setCurrentPage foi colocado aqui por motivos de TESTE, mais tarde quando pudermos realmente enviar se a solicitação foi aceita ou não

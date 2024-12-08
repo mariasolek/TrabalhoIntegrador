@@ -3,8 +3,9 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid2';
 import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br'; 
 import axios from 'axios';
+
+import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 function Calendario() {
@@ -56,7 +57,7 @@ function Calendario() {
         <div>
             <Grid container fixed>
                 <Grid>
-                    <h1>Agenda - {currentDate.format('MMMM YYYY')}</h1>
+                    <h2 id='txtcalend'>Calendário - {currentDate.format('MMMM YYYY')}</h2>
                     <Box sx={{width:"520px"}}>
                     <Grid container spacing={5.3} className="headeragenda">
                         {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'].map((day) => (

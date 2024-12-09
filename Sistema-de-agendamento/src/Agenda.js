@@ -17,12 +17,13 @@ const colunas = [
     { field: "data", headerName: "Data", width: 100 },
 ];
 
-function Agenda() {
+function Agenda({codFunc}) {
     const [linhas, setLinhas] = React.useState([]);
     const [linhaSel, setLinhaSel] = React.useState(null); // Linha selecionada
     const [diasAgendados, setDiasAgendados] = React.useState([]); // Estado para os dias agendados
     const [currentPage, setCurrentPage] = React.useState("agenda"); // Controle de exibição
 
+   
     React.useEffect(() => {
         const getDados = async () => {
             try {
@@ -105,13 +106,13 @@ function Agenda() {
                                                         margin: '5px',
                                                         paddingTop: '20px',
                                                         paddingBottom: '10px',
-                                                        backgroundColor: diasAgendados.includes(day.day) ? '#003366' : 'transparent', // Cor de fundo apenas para os dias agendados
-                                                        color: diasAgendados.includes(day.day) ? 'white' : 'text.primary', // Cor do texto (número) para os dias agendados
+                                                        backgroundColor: diasAgendados.includes(day.day) ? '#003366' : 'transparent', 
+                                                        color: diasAgendados.includes(day.day) ? 'white' : 'text.primary', 
                                                         '&:hover': {
-                                                            backgroundColor: diasAgendados.includes(day.day) ? '#002244' : 'transparent', // Hover apenas nos dias agendados
+                                                            backgroundColor: diasAgendados.includes(day.day) ? '#002244' : 'transparent', 
                                                         },
                                                     }}
-                                                    disabled={!diasAgendados.includes(day.day)} // Desabilita os dias sem agendamento
+                                                    disabled={!diasAgendados.includes(day.day)} 
                                                 >
                                                     {day.day}
                                                 </Button>
@@ -145,7 +146,7 @@ function Agenda() {
             ) : (
                 // Componente Solicitacao
                 <Box>
-                    <Solicitacao linha={linhaSel} />
+                    <Solicitacao linha={linhaSel} codFunc={codFunc}/>
                 </Box>
             )}
         </div>

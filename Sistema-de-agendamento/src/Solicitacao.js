@@ -5,7 +5,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import Agenda from './Agenda';
 
-function Solicitacao({ linha }) {
+function Solicitacao({ linha, codFunc }) {
     const [dadosSolicitacao, setDadosSolicitacao] = useState(null);
     const [gruValue, setGruValue] = useState(""); // Estado para armazenar o valor da GRU
     const [currentPage, setCurrentPage] = useState("solicit");
@@ -34,7 +34,8 @@ function Solicitacao({ linha }) {
         try {
             const response = await axios.post('http://localhost:3001/atualizar-solicitacao', {
                 cod: linha.cod,
-                val_gru: gruValue, 
+                val_gru: gruValue,
+                func: codFunc, 
             });
 
             alert(response.data.message); 
@@ -42,6 +43,19 @@ function Solicitacao({ linha }) {
         } catch (error) {
             console.error("Erro ao enviar a solicitação:", error);
             alert("Erro ao enviar a solicitação.");
+        }
+    };
+
+    const handleRejeitar = async () => {
+        try {
+            const response = await axios.post('http://localhost:3001/rejeitar-solicitacao', {
+                cod: linha.cod
+            });
+            alert(response.data.message); 
+            setCurrentPage("voltar");
+        } catch (error) {
+            console.error("Erro ao rejeitar a solicitação:", error);
+            alert("Erro ao rejeitar a solicitação.");
         }
     };
 
@@ -90,6 +104,7 @@ function Solicitacao({ linha }) {
                             className="enviar"
                             onClick={handleEnviar} // Função que envia o valor da GRU
                         />
+                        
                     </Grid>
                 </Grid>
             )}

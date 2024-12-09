@@ -30,15 +30,18 @@ function App() {
 	const [exibeFormulario, setExibeFormulario] = React.useState(false);
 	const [exibeSolicitacao, setExibeSolicitacao] = React.useState(false);
 	const [cargo, setCargo] = React.useState(null);
+	const [cod, setCod] = React.useState(null);
 
 
     React.useEffect(() => {
 		const token = localStorage.getItem("token");
 		const storedCargo = localStorage.getItem("cargo"); //atualizei Login pra enviar o cargo da pessoa que logou
+		const storedCod = localStorage.getItem("cod");
 		if (token && storedCargo) {
 			console.log("Cargo carregado do localStorage:", storedCargo);
 		  setIsLoggedIn(true);
 		  setCargo(storedCargo);
+		  setCod(storedCod);
 		} else {
 		  handleLogout();
 		}
@@ -47,13 +50,16 @@ function App() {
 
 	const handleLogin = (status) => {
 		const storedCargo = localStorage.getItem("cargo"); //precisa ser assim se não não atualiza na hora
+		const storedCod = localStorage.getItem("cod");
 		setIsLoggedIn(status); 
 		setCargo(storedCargo);
+		setCod(storedCod);
 	};
 	
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		localStorage.removeItem("cargo");
+		localStorage.removeItem("cod");
 		setCargo(null);
 		setIsLoggedIn(false);
 		setExibeAceito(false);
@@ -140,7 +146,7 @@ function App() {
 			): isLoggedIn && exibeceito ? (
 				<Aceitas/>			
 			):isLoggedIn ? (
-				<Agenda />
+				<Agenda codFunc={cod}/>
 			) : exibeLogin ? (
 			  <Login handleLogin={handleLogin}/>
 			) : (

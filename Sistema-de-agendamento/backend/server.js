@@ -11,8 +11,8 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const pgp = require("pg-promise")({});
 
-const usuario = "";
-const senha = "";
+const usuario = "alex";
+const senha = "a1895";
 const db = pgp(`postgres://${usuario}:${senha}@localhost:5432/trabintegrador`);
 
 const app = express();
@@ -126,22 +126,22 @@ app.post(
 
         try {
             //procura o cargo no banco
-            const result = await db.one('SELECT cargo FROM funcionario WHERE cod = $1;', [user.cod]);
-            if (!result) {
+            const resultCargo = await db.one('SELECT cargo FROM funcionario WHERE cod = $1;', [user.cod]);
+            if (!resultCargo) {
                 return res.status(404).json({ message: "Usuário não encontrado no banco de dados" });
             }
-            const cargo = result.cargo;
+            const cargo = resultCargo.cargo;
             console.log("Cargo:", cargo); //pra teste
 
             // Gera o token JWT com o código do usuário e o cargo
-            const token = jwt.sign({ codigo: user.cod, cargo: cargo }, "your-secret-key", {
+            const token = jwt.sign({ codigo: user.cod, cargo: cargo, cod: user.cod }, "your-secret-key", {
                 expiresIn: "1h",
             });
 
             console.log("Token gerado:", token); //pra teste
 
             //retorna o token e o cargo na resposta
-            return res.json({ message: "Login bem-sucedido", token: token, cargo: cargo });
+            return res.json({ message: "Login bem-sucedido", token: token, cargo: cargo, cod: user.cod});
         } catch (error) {
             console.error("Erro ao consultar banco:", error);
             return res.status(500).json({ message: "Erro ao processar o login" });
@@ -295,15 +295,8 @@ app.post('/formulario', async (req, res) => {
 
 app.get('/dias-indisponiveis', async (req, res) => {
     try {
-        const query = `
-            SELECT dt
-            FROM reservas
-            GROUP BY dt
-            HAVING COUNT(*) >= 6;
-        `
-        const diasIndisponiveis = await db.any(query);
+        const diasIndisponiveis = await db.any( `SELECT dt FROM reservas GROUP BY dt HAVING COUNT(*) >= 6;`);
         const datasIndisponiveis = diasIndisponiveis.map((row) => row.dt);
-
         res.json(datasIndisponiveis); 
     } catch (error) {
         console.error('Erro ao buscar dias indisponíveis:', error);
@@ -313,11 +306,7 @@ app.get('/dias-indisponiveis', async (req, res) => {
 
 app.get('/dias-agendados', async (req, res) => {
     try {
-        const query = `
-            SELECT DISTINCT dt
-            FROM reservas;
-        `;
-        const diasAgendados = await db.any(query);
+        const diasAgendados = await db.any(`SELECT DISTINCT dt FROM reservas;`);
         const datasAgendadas = diasAgendados.map((row) => row.dt);
 
         res.json(datasAgendadas); 
@@ -328,22 +317,30 @@ app.get('/dias-agendados', async (req, res) => {
 });
 
 app.post('/atualizar-solicitacao', async (req, res) => {
-    const { cod, val_gru } = req.body;
+    const { cod, val_gru, func } = req.body;
+    console.log("Dados recebidos no backend:", { cod, val_gru, func });
 
     if (!cod || !val_gru) {
         return res.status(400).json({ message: "Código e valor da GRU são obrigatórios." });
     }
 
     try {
-        const query = `
-            UPDATE solicitacao
-            SET val_gru = $1, status = 'Aceita'
-            WHERE cod = $2 AND status = 'Pendente'
-        `;
-        await db.none(query, [val_gru, cod]);
-
-
+        await db.none(`UPDATE solicitacao SET val_gru = $1, status = 'Aceita', func = $2 
+            WHERE cod = $3;`,
+            [val_gru, func, cod]);
         res.status(200).json({ message: "Solicitação aceita!" });
+    } catch (error) {
+        console.error("Erro ao atualizar solicitação:", error);
+        res.status(500).json({ message: "Erro interno do servidor" });
+    }
+});
+
+app.post('/rejeitar-solicitacao', async (req, res) => {
+    const cod = req.body;
+    try {
+        await db.none(`UPDATE solicitacao SET status = 'Rejeitada' WHERE cod = $1;`,
+            [cod]);
+        res.status(200).json({ message: "Solicitação Rejeitada" });
     } catch (error) {
         console.error("Erro ao atualizar solicitação:", error);
         res.status(500).json({ message: "Erro interno do servidor" });

@@ -28,6 +28,7 @@ function Login(props) {
 				//salva o token e cargo na sessão
 				localStorage.setItem("token", response.data.token);
                 localStorage.setItem("cargo", response.data.cargo);
+                localStorage.setItem("cod", response.data.cod);
 				//seta o estado do login caso tudo deu certo
 				props.handleLogin(true);
 				console.log(props.user);

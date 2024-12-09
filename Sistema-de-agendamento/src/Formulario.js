@@ -14,6 +14,7 @@ function Formulario() {
     const [volume, setVolume] = useState(''); 
     const [ncompartimento, setNcompartimento] = useState(''); 
     const [setasAdc, setSetasAdc] = useState(''); 
+    const [tipoVerificacao, settipoVerificacao] = useState(''); 
     const [dt, setDt] = React.useState(null);
 
     const [openMessage, setOpenMessage] = React.useState(false);
@@ -25,28 +26,32 @@ function Formulario() {
     const handleSubmit =  async (event) => {
         event.preventDefault();
 
-        if (nome === '' || telefone === '' || email === ''  || placa === '' || volume === '' || ncompartimento === '' || setasAdc === '') {
-            alert('Preencha todos os campos');
+        if (!nome || !telefone || !email || !placa || !volume || !ncompartimento || !setasAdc || !dt) {
+            alert('Preencha todos os campos!');
             return;
         }
 
-        alert("Enviando os dados:" + nome + " - " + telefone + " - " + email + " - " + placa + " - " + volume + " - " + ncompartimento + " - " + setasAdc);
+        try {
+            const response = await axios.post('http://localhost:3001/formulario', {
+                nome,
+                telefone,
+                email,
+                placa,
+                volume,
+                ncompartimento,
+                setasAdc,
+                tipoVerificacao,
+                dt,
+            });
+            setMessageText(response.data.message || 'Solicitação realizada com sucesso!');
+            setMessageSeverity('success');
+            setOpenMessage(true);
 
-        {/*ISSO TEM QUE ARRUMAR !*/}
-        try{ 
-            const response = await axios.post('http://localhost:3000/formulario', {
-            
-        }); 
-        if (response.data) {
-            alert(response.data);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao processar a solicitação!');
         }
-    } catch (error) {
-        console.log(error);
-			setOpenMessage(true);
-			setMessageText("Falha ao logar usuário!");
-			setMessageSeverity("error");
-    }
-};
+    };
 
     return(
         <div>
@@ -78,17 +83,10 @@ function Formulario() {
                                         onChange={(e) => setNcompartimento(e.target.value)}></input><br/>
 
                                         <Grid container spacing={3}>
-                                            <Grid>
-                                                <label for="veiculo">Veículo novo</label><br/>
-                                                <select id="veiculo" className='caixatexto'>
-                                                    <option value="S">Sim</option>
-                                                    <option value="N">Não</option>
-                                                </select><br/>
-                                            </Grid>
 
                                             <Grid>
                                                 <label for="dt">Data</label><br/>
-                                                <input type="date" value="dt" min={today} className='caixatexto'
+                                                <input type="date" value={dt || ""} min={today} className='caixatexto'
                                                 onChange={(e) => setDt(e.target.value)}></input><br/>
                                             </Grid>
                                         </Grid>
@@ -100,10 +98,11 @@ function Formulario() {
                                         onChange={(e) => setTelefone(e.target.value)}></input><br/>
 
                                         <label for="tipo-verif">Tipo de Verificação</label><br/>
-                                        <select id="tipo-verif" className='caixatexto'> 
-                                            <option value="inicial">Inicial</option>
-                                            <option value="periodica">Periódica</option>
-                                            <option value="pos-reparo">Pós-reparo</option>
+                                        <select id="tipo-verif" className='caixatexto'
+                                        onChange={(e) => settipoVerificacao(e.target.value)}> 
+                                            <option value="1">Inicial</option>
+                                            <option value="2">Periódica</option>
+                                            <option value="3">Pós-reparo</option>
                                         </select><br/>
 
                                         <label for="volume-tot">Volume total</label><br/>

@@ -17,12 +17,14 @@ const colunas = [
     { field: "data", headerName: "Data", width: 100 },
 ];
 
-function Agenda() {
+function Agenda({codFunc}) {
+    console.log("codFunc recebido no Agenda:", codFunc);
     const [linhas, setLinhas] = React.useState([]);
     const [linhaSel, setLinhaSel] = React.useState(null); // Linha selecionada
-    const [diasIndisponiveis, setDiasIndisponiveis] = React.useState([]);
+    const [diasAgendados, setDiasAgendados] = React.useState([]); // Estado para os dias agendados
     const [currentPage, setCurrentPage] = React.useState("agenda"); // Controle de exibição
 
+   
     React.useEffect(() => {
         const getDados = async () => {
             try {
@@ -39,17 +41,17 @@ function Agenda() {
             }
         };
 
-        const fetchDiasIndisponiveis = async () => {
+        const fetchDiasAgendados = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/dias-indisponiveis');
-                setDiasIndisponiveis(response.data.map((date) => dayjs(date).date()));
+                const response = await axios.get('http://localhost:3001/dias-agendados');
+                setDiasAgendados(response.data.map((date) => dayjs(date).date()));
             } catch (error) {
-                console.error('Erro ao buscar dias indisponíveis:', error);
+                console.error('Erro ao buscar dias agendados:', error);
             }
         };
 
         getDados();
-        fetchDiasIndisponiveis();
+        fetchDiasAgendados();
     }, []);
 
     const handleRowClick = (params) => {
@@ -101,12 +103,22 @@ function Agenda() {
                                             <Box textAlign="center">
                                                 {day ? (
                                                     <Button
-                                                        sx={{ margin: '5px', paddingTop: '20px', paddingBottom: '10px' }}
-                                                        color={diasIndisponiveis.includes(day.day) ? 'error' : 'primary'}
-                                                        disabled
-                                                    >
-                                                        {day.day}
-                                                    </Button>
+                                                    sx={{
+                                                        margin: '5px',
+                                                        paddingTop: '20px',
+                                                        paddingBottom: '10px',
+                                                        backgroundColor: diasAgendados.includes(day.day) ? '#003366' : 'transparent', 
+                                                        color: diasAgendados.includes(day.day) ? 'white' : 'text.primary', 
+                                                        '&:hover': {
+                                                            backgroundColor: diasAgendados.includes(day.day) ? '#002244' : 'transparent', 
+                                                        },
+                                                    }}
+                                                    disabled={!diasAgendados.includes(day.day)} 
+                                                >
+                                                    {day.day}
+                                                </Button>
+                                                
+                                                
                                                 ) : (
                                                     <div></div>
                                                 )}
@@ -135,7 +147,7 @@ function Agenda() {
             ) : (
                 // Componente Solicitacao
                 <Box>
-                    <Solicitacao linha={linhaSel} />
+                    <Solicitacao linha={linhaSel} codFunc={codFunc}/>
                 </Box>
             )}
         </div>

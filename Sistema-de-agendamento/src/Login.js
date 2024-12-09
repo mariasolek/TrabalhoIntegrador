@@ -22,14 +22,17 @@ function Login(props) {
                 codigo: codigo,
                 senha: senha,
             });
+            
            
     
             if (response.status >= 200 && response.status < 300) {
 				//salva o token e cargo na sessão
 				localStorage.setItem("token", response.data.token);
                 localStorage.setItem("cargo", response.data.cargo);
+                sessionStorage.setItem("cod", codigo);
+                
 				//seta o estado do login caso tudo deu certo
-				props.handleLogin(true);
+				props.handleLogin(true, codigo);
 				console.log(props.user);
                 setCurrentPage("success");
 			} else {

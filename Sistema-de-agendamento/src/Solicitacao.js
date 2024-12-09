@@ -49,6 +49,7 @@ function Solicitacao({ linha, codFunc }) {
     const handleRejeitar = async () => {
         try {
             const response = await axios.post('http://localhost:3001/rejeitar-solicitacao', {
+                func: codFunc,
                 cod: linha.cod
             });
             alert(response.data.message); 
@@ -110,17 +111,18 @@ function Solicitacao({ linha, codFunc }) {
                             <Grid>
                                 <Button
                                     type="link"
-                                    className="enviar"
-                                    onClick={(event) =>/*nao sei oq botar aqui*/}
+                                    variant= "contained"
+                                    sx={{backgroundColor:'#BF0411', marginTop: '300px', marginLeft: '10px', paddingRight:'25px', paddingLeft: '25px', paddingTop: '15px', paddingBottom: '15px'}}
+                                    onClick={handleRejeitar} 
                                 >
                                     Rejeitar
                                 </Button>
                             </Grid>
-                        </Grid>
                     </Grid>
                 </Grid>
+            </Grid>
             )}
-            {currentPage === "voltar" && <Agenda />}
+            {currentPage === "voltar" && <Agenda codFunc={codFunc}/>}
         </div>
     );
 }

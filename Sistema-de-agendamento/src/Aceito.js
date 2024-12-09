@@ -11,6 +11,8 @@ const colunas = [
     { field: "empresa", headerName: "Empresa", width: 180 },
     { field: "volume", headerName: "Volume", width: 100 },
     { field: "data", headerName: "Data", width: 180 },
+    { field: "gru", headerName: "GRU", width: 150 }, // Coluna para o GRU
+    { field: "funcionario", headerName: "Funcionario", width: 180 }, // Coluna para o Funcionario
 ];
 
 function Aceitas() {
@@ -37,6 +39,8 @@ function Aceitas() {
                     empresa: item.empresa,
                     volume: item.volume,
                     data: item.data,
+                    gru: item.val_gru, // Adicionando o GRU
+                    funcionario: item.func, // Adicionando o nome do funcionário
                 }));
                 setLinhas(solicitacoesFormatadas);
                 setFilteredLinhas(solicitacoesFormatadas); // Inicializa com todos os dados
@@ -61,7 +65,6 @@ function Aceitas() {
             setFilteredLinhas(linhas); // Se não houver filtro, exibe todas as linhas
         }
     }, [filterDate, linhas]);
-
 
     return (
         <div>

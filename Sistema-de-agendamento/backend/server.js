@@ -208,20 +208,22 @@ app.get("/solicitacoes_pendentes", async (req, res) => {
 app.get("/solicitacoes_aceitas", async (req, res) => {
     try {
         const solicitacoes = await db.any(`
-            SELECT s.cod, s.placa, v.vol_total AS volume, p.nome AS empresa, r.dt AS data
+            SELECT s.cod, s.placa, v.vol_total AS volume, p.nome AS empresa, r.dt AS data, 
+                   s.val_gru, s.func
             FROM solicitacao s
             JOIN veiculo v ON s.placa = v.placa
             JOIN proprietario p ON v.prop = p.email
             JOIN reservas r ON s.dt = r.cod
             WHERE s.status = 'Aceita';
         `);
-        console.log("Retornando todas as  solicitações aceitas");
+        console.log("Retornando todas as solicitações aceitas");
         res.json(solicitacoes).status(200);
     } catch (error) {
         console.error("Erro ao buscar solicitações aceitas:", error);
         res.sendStatus(400);
     }
 });
+
 
 
 app.get("/solicitacao", async (req, res) => {
@@ -249,7 +251,6 @@ app.get("/solicitacao", async (req, res) => {
 		res.status(500).json({ error: "Erro interno do servidor." });
 	}
 });
-
 
 app.post('/formulario', async (req, res) => {
     const { nome, telefone, email, placa, volume, ncompartimento, setasAdc, tipoVerificacao, dt } = req.body;

@@ -43,10 +43,10 @@ function Formulario() {
                 tipoVerificacao,
                 dt,
             });
+            setMessageText(response.data.message || 'Solicitação realizada com sucesso!');
+            setMessageSeverity('success');
+            setOpenMessage(true);
 
-            if (response.data) {
-                alert(response.data);
-            }
         } catch (error) {
             console.error(error);
             alert('Erro ao processar a solicitação!');
@@ -83,17 +83,10 @@ function Formulario() {
                                         onChange={(e) => setNcompartimento(e.target.value)}></input><br/>
 
                                         <Grid container spacing={3}>
-                                            <Grid>
-                                                <label for="veiculo">Veículo novo</label><br/>
-                                                <select id="veiculo" className='caixatexto'>
-                                                    <option value="S">Sim</option>
-                                                    <option value="N">Não</option>
-                                                </select><br/>
-                                            </Grid>
 
                                             <Grid>
                                                 <label for="dt">Data</label><br/>
-                                                <input type="date" value="dt" min={today} className='caixatexto'
+                                                <input type="date" value={dt || ""} min={today} className='caixatexto'
                                                 onChange={(e) => setDt(e.target.value)}></input><br/>
                                             </Grid>
                                         </Grid>
@@ -107,7 +100,6 @@ function Formulario() {
                                         <label for="tipo-verif">Tipo de Verificação</label><br/>
                                         <select id="tipo-verif" className='caixatexto'
                                         onChange={(e) => settipoVerificacao(e.target.value)}> 
-                                            <option value="" disabled>Selecione</option>
                                             <option value="1">Inicial</option>
                                             <option value="2">Periódica</option>
                                             <option value="3">Pós-reparo</option>

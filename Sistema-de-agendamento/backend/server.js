@@ -11,8 +11,8 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const pgp = require("pg-promise")({});
 
-const usuario = "meu_usuario";
-const senha = "minha_senha";
+const usuario = "";
+const senha = "";
 const db = pgp(`postgres://${usuario}:${senha}@localhost:5432/trabintegrador`);
 
 const app = express();
@@ -231,6 +231,24 @@ app.get("/solicitacoes_pendentes", async (req, res) => {
     }
 });
 
+app.get("/solicitacoes_aceitas", async (req, res) => {
+    try {
+        const solicitacoes = await db.any(`
+            SELECT s.cod, s.placa, v.vol_total AS volume, p.nome AS empresa, r.dt AS data
+            FROM solicitacao s
+            JOIN veiculo v ON s.placa = v.placa
+            JOIN proprietario p ON v.prop = p.email
+            JOIN reservas r ON s.dt = r.cod
+            WHERE s.status = 'Aceita';
+        `);
+        console.log("Retornando todas as  solicitações aceitas");
+        res.json(solicitacoes).status(200);
+    } catch (error) {
+        console.error("Erro ao buscar solicitações aceitas:", error);
+        res.sendStatus(400);
+    }
+});
+
 
 app.get("/solicitacao", async (req, res) => {
 	try {
@@ -279,42 +297,6 @@ app.post("/cadastro_veiculo", async (req, res) => {
     }
 });
 
-app.post("/cadastro_doc", async (req, res) => {
-    try {
-        const {placa, crlv, comp_ver} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-
-        await db.none("INSERT INTO veiculo (crlv, comp_ver) VALUES ($1, $2) WHERE placa = $3;", [
-            crlv, 
-			comp_ver,
-			placa
-        ]);
-        console.log("Documentos inseridos com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
-app.post("/cadastro_docnovo", async (req, res) => {
-    try {
-        const {placa, notaf, dcl_fabr} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-
-        await db.none("INSERT INTO veiculo (notaf, dcl_conf) VALUES ($1, $2) WHERE placa = $3;", [
-            notaf, 
-			dcl_fabr,
-			placa
-        ]);
-        console.log("Documentos inseridos com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
 app.post("/cadastro_proprietario", async (req, res) => {
     const saltRounds = 10;
     try {
@@ -340,40 +322,100 @@ app.post('/formulario', async (req, res) => {
     const { nome, telefone, email, placa, volume, ncompartimento, setasAdc, tipoVerificacao, dt } = req.body;
 
     try {
-        // Verificar se o proprietário existe
+        //se a data já aparece 6 vezes em reservas
+        const countReservas = await db.one('SELECT COUNT(*) FROM reservas WHERE dt = $1', [dt]);
+        if (parseInt(countReservas.count, 10) >= 6) {
+            return res.status(400).json({ message: 'A data selecionada já atingiu o limite de reservas!' });
+        }
+        //proprietário
         const proprietario = await db.oneOrNone('SELECT * FROM proprietario WHERE email = $1', [email]);
         if (!proprietario) {
-            // Inserir proprietário se não existir
             await db.none('INSERT INTO proprietario(email, nome, tel) VALUES($1, $2, $3)', 
                 [email, nome, telefone]);
         }
 
-        // Verificar se o veículo existe
+        //veículo
         const veiculo = await db.oneOrNone('SELECT * FROM veiculo WHERE placa = $1', [placa]);
         if (!veiculo) {
-            // Inserir veículo se não existir
             const insertVeiculoQuery = 'INSERT INTO veiculo(placa, vol_total, num_comp, set_ad, prop) VALUES($1, $2, $3, $4, $5)';
             await db.none(insertVeiculoQuery, [placa, volume, ncompartimento, setasAdc, email]);
         }
 
-        // Verificar se a data está disponível para reserva
-        const reserva = await db.oneOrNone('SELECT * FROM reservas WHERE dt = $1', [dt]);
-        const reservaId = reserva.cod
-        if (!reserva) {
-            // Inserir reserva se a data estiver disponível
-            const reservaResponse = await db.one('INSERT INTO reservas(cod, dt, status) VALUES(default, $1, $2)', [dt, 'reservado']);
-            const reservaId = reservaResponse.cod;
-            // Inserir solicitação
-        }
-            await db.none(`
-                INSERT INTO solicitacao(cod, status, tipo, placa, dt) 
-                VALUES(default, $1, $2, $3, $4)`, 
-                ['Pendente', tipoVerificacao, placa, reservaId]);
-            res.json({ message: 'Solicitação realizada com sucesso!' });
-        
+        //inserir a data em reservas e obter o ID
+        const reserva = await db.one('INSERT INTO reservas(cod, dt, status) VALUES(default, $1, $2) RETURNING cod', 
+                                     [dt, 'reservado']);
+        const reservaId = reserva.cod;
+
+        //solicitação
+        await db.none(`
+            INSERT INTO solicitacao(cod, status, tipo, placa, dt) 
+            VALUES(default, $1, $2, $3, $4)`, 
+            ['Pendente', tipoVerificacao, placa, reservaId]);
+        res.json({ message: 'Solicitação realizada com sucesso!' });
+
     } catch (error) {
         console.error('Erro no processamento:', error);
         res.status(500).json({ message: 'Erro ao inserir a solicitação no banco' });
     }
 });
 
+app.get('/dias-indisponiveis', async (req, res) => {
+    try {
+        const query = `
+            SELECT dt
+            FROM reservas
+            GROUP BY dt
+            HAVING COUNT(*) >= 6;
+        `
+
+        // Executa a consulta usando pg-promise
+        const diasIndisponiveis = await db.any(query);
+
+        // Extrai apenas as datas do resultado
+        const datasIndisponiveis = diasIndisponiveis.map((row) => row.dt);
+
+        res.json(datasIndisponiveis); // Retorna as datas ao frontend
+    } catch (error) {
+        console.error('Erro ao buscar dias indisponíveis:', error);
+        res.status(500).json({ error: 'Erro ao buscar dias indisponíveis.' });
+    }
+});
+
+app.get('/dias-agendados', async (req, res) => {
+    try {
+        const query = `
+            SELECT DISTINCT dt
+            FROM reservas;
+        `;
+        const diasAgendados = await db.any(query);
+        const datasAgendadas = diasAgendados.map((row) => row.dt);
+
+        res.json(datasAgendadas); // Retorna as datas ao frontend
+    } catch (error) {
+        console.error('Erro ao buscar dias agendados:', error);
+        res.status(500).json({ error: 'Erro ao buscar dias agendados.' });
+    }
+});
+
+app.post('/atualizar-solicitacao', async (req, res) => {
+    const { cod, val_gru } = req.body;
+
+    if (!cod || !val_gru) {
+        return res.status(400).json({ message: "Código e valor da GRU são obrigatórios." });
+    }
+
+    try {
+        const query = `
+            UPDATE solicitacao
+            SET val_gru = $1, status = 'Aceita'
+            WHERE cod = $2 AND status = 'Pendente'
+        `;
+        await db.none(query, [val_gru, cod]);
+
+
+        res.status(200).json({ message: "Solicitação aceita!" });
+    } catch (error) {
+        console.error("Erro ao atualizar solicitação:", error);
+        res.status(500).json({ message: "Erro interno do servidor" });
+    }
+});

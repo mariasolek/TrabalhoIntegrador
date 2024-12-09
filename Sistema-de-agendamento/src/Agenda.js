@@ -20,7 +20,7 @@ const colunas = [
 function Agenda() {
     const [linhas, setLinhas] = React.useState([]);
     const [linhaSel, setLinhaSel] = React.useState(null); // Linha selecionada
-    const [diasIndisponiveis, setDiasIndisponiveis] = React.useState([]);
+    const [diasAgendados, setDiasAgendados] = React.useState([]); // Estado para os dias agendados
     const [currentPage, setCurrentPage] = React.useState("agenda"); // Controle de exibição
 
     React.useEffect(() => {
@@ -39,17 +39,18 @@ function Agenda() {
             }
         };
 
-        const fetchDiasIndisponiveis = async () => {
+        const fetchDiasAgendados = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/dias-indisponiveis');
-                setDiasIndisponiveis(response.data.map((date) => dayjs(date).date()));
+                const response = await axios.get('http://localhost:3000/dias-agendados');
+                // Aqui garantimos que os dias são armazenados corretamente no formato de número do dia
+                setDiasAgendados(response.data.map((date) => dayjs(date).date()));
             } catch (error) {
-                console.error('Erro ao buscar dias indisponíveis:', error);
+                console.error('Erro ao buscar dias agendados:', error);
             }
         };
 
         getDados();
-        fetchDiasIndisponiveis();
+        fetchDiasAgendados();
     }, []);
 
     const handleRowClick = (params) => {
@@ -102,7 +103,7 @@ function Agenda() {
                                                 {day ? (
                                                     <Button
                                                         sx={{ margin: '5px', paddingTop: '20px', paddingBottom: '10px' }}
-                                                        color={diasIndisponiveis.includes(day.day) ? 'error' : 'primary'}
+                                                        color={diasAgendados.includes(day.day) ? 'secondary' : 'primary'} // Dias agendados em 'secondary', caso contrário 'primary'
                                                         disabled
                                                     >
                                                         {day.day}

@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from "axios";
 import './App.css';
-import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
 import CssBaseline from '@mui/material/CssBaseline';
 import Formulario from './Formulario';
@@ -72,7 +71,7 @@ function App() {
     function controlaInterface(id) { //teste
 		console.log(`Veio ${id}`); 
 		switch (id){
-			case 'cadastro':
+			case 'Cadastro':
 				setExibeAceito(false);
 				setExibeAgenda(false);
 				setExibeCadastro(true);
@@ -83,7 +82,7 @@ function App() {
 				setExibeLogin(false);
 				setExibeSolicitacao(false);
 				break;
-			case 'login':
+			case 'Login':
 				setExibeAceito(false);
 				setExibeAgenda(false);
 				setExibeCadastro(false);
@@ -94,7 +93,7 @@ function App() {
 				setExibeLogin(true);
 				setExibeSolicitacao(false);
 				break;
-			case 'logout':
+			case 'Logout':
 				handleLogout();
 				setExibeAceito(false);
 				setExibeAgenda(false);
@@ -106,8 +105,8 @@ function App() {
 				setExibeLogin(false);
 				setExibeSolicitacao(false);
 				break;
-			 case 'solicitacao':
-				setExibeAceito(false);
+			 case 'Sol-aceitas':
+				setExibeAceito(true);
 				setExibeAgenda(false);
 				setExibeCadastro(false);
 				setExibeDashboard(false);
@@ -115,7 +114,7 @@ function App() {
 				setExibeDocumentosNovo(false);
 				setExibeFormulario(false);
 				setExibeLogin(false);
-				setExibeSolicitacao(true);
+				setExibeSolicitacao(false);
 				break;
 			default:
 				setExibeAceito(false);
@@ -136,8 +135,12 @@ function App() {
 		  <CssBaseline />
 		  <Menu controlaClique={controlaInterface} isLoggedIn={isLoggedIn} cargo={cargo} />
 		  <Grid container justifyContent="center" spacing={2}>
-			{isLoggedIn ? (
-			  <Agenda />
+			{isLoggedIn && exibeCadastro ? (
+				<Cadastro />
+			): isLoggedIn && exibeceito ? (
+				<Aceitas/>			
+			):isLoggedIn ? (
+				<Agenda />
 			) : exibeLogin ? (
 			  <Login handleLogin={handleLogin}/>
 			) : (

@@ -34,60 +34,62 @@ function Calendario() {
         // Estado para dias indisponíveis
         const [diasIndisponiveis, setDiasIndisponiveis] = React.useState([]);
 
-        const fetchDiasIndisponiveis = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/dias-indisponiveis'); // Verifique a URL
-                setDiasIndisponiveis(response.data.map((date) => dayjs(date).date())); // Ajuste o formato conforme necessário
-                console.log('Resposta do backend:', response.data);
-                console.log('Dias indisponíveis:', diasIndisponiveis);
+    const fetchDiasIndisponiveis = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/dias-indisponiveis'); // Verifique a URL
+            const dias = response.data.map((date) => dayjs(date).date()); // Extrair o dia do mês
+            setDiasIndisponiveis(dias);
+            console.log('Dias indisponíveis:', dias);
+        } catch (error) {
+            console.error('Erro ao buscar dias indisponíveis:', error);
+        }
+    };
 
-            } catch (error) {
-                console.error('Erro ao buscar dias indisponíveis:', error);
-                {/*alert('Não foi possível carregar os dias indisponíveis.');*/}
-            }
-        };
-    
-        // Chamada inicial para buscar os dias indisponíveis
-        React.useEffect(() => {
-            fetchDiasIndisponiveis();
-        }, []);
-    
+    // Chamada inicial para buscar os dias indisponíveis
+    React.useEffect(() => {
+        fetchDiasIndisponiveis();
+    }, []);
+
 
     return (
         <div>
             <Grid container fixed>
                 <Grid>
                     <h2 id='txtcalend'>Calendário - {currentDate.format('MMMM YYYY')}</h2>
-                    <Box sx={{width:"520px"}}>
-                    <Grid container spacing={5.3} className="headeragenda">
-                        {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'].map((day) => (
-                            <Grid item xs={1.71} key={day}>
-                                <Box textAlign="center">{day}</Box>
-                            </Grid>
-                        ))}
-                    </Grid>
-
-                    {weeks.map((week, index) => (
-                        <Grid container key={index}>
-                            {week.map((day, idx) => (
-                                <Grid item xs={1.71} key={idx}>
-                                    <Box textAlign="center">
-                                        {day ? (
-                                            <Button
-                                                sx={{margin:'5px', paddingTop:'10px', paddingBottom:'10px'}}
-                                                color={diasIndisponiveis.includes(day.day) ? 'error' : 'primary'}
-                                            >
-                                                {day.day}
-                                            </Button>
-                                        ) : (
-                                            <div></div> // Espaço vazio para os dias anteriores ao mês
-                                        )}
-                                    </Box>
+                    <Box sx={{ width: "520px" }}>
+                        <Grid container spacing={5.3} className="headeragenda">
+                            {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'].map((day) => (
+                                <Grid item xs={1.71} key={day}>
+                                    <Box textAlign="center">{day}</Box>
                                 </Grid>
                             ))}
                         </Grid>
-                    ))}
-                </Box>
+
+                        {weeks.map((week, index) => (
+                            <Grid container key={index}>
+                                {week.map((day, idx) => (
+                                    <Grid item xs={1.71} key={idx}>
+                                        <Box textAlign="center">
+                                            {day ? (
+                                                <Button
+                                                    sx={{
+                                                        margin: '5px',
+                                                        paddingTop: '10px',
+                                                        paddingBottom: '10px',
+                                                        color: diasIndisponiveis.includes(day.day) || day.date.day() === 0 || day.date.day() === 6 ? 'lightgray' : 'inherit', // Alterando a cor do número
+                                                    }}
+                                                >
+                                                    {day.day}
+                                                </Button>
+                                            ) : (
+                                                <div></div> // Espaço vazio para os dias anteriores ao mês
+                                            )}
+                                        </Box>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ))}
+                    </Box>
                 </Grid>
             </Grid>
         </div>

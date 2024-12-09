@@ -5,26 +5,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import Agenda from './Agenda';
 
-function checkFileSize() {
-    const fs = document.getElementById("fs");
-    const files = fs.files;
-
-    if (files.length > 0) {
-        if (files[0].size > 5 * 1024 * 1024) {
-            alert("Arquivo ultrapassa o tamanho máximo aceito (5MB)");
-            fs.reportValidity();
-            return;
-        }
-    }
-    fs.setCustomValidity("");
-}
-
-React.onload = () => {
-    document.getElementById("fs").onchange = checkFileSize;
-};
-
 function Solicitacao({ linha }) {
-    const [dadosSolicitacao, setDadosSolicitacao] = useState(null); 
+    const [dadosSolicitacao, setDadosSolicitacao] = useState(null);
+    const [gruValue, setGruValue] = useState(""); // Estado para armazenar o valor da GRU
     const [currentPage, setCurrentPage] = useState("solicit");
 
     React.useEffect(() => {
@@ -36,13 +19,32 @@ function Solicitacao({ linha }) {
                 console.error("Erro ao buscar os dados da solicitação:", error);
             }
         };
-    
 
         if (linha && linha.cod) {
             fetchSolicitacao();
         }
-    }, [linha]);  
-    
+    }, [linha]);
+
+    const handleEnviar = async () => {
+        if (!gruValue) {
+            alert("Por favor, insira o valor da GRU.");
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:3001/atualizar-solicitacao', {
+                cod: linha.cod,
+                val_gru: gruValue, 
+            });
+
+            alert(response.data.message); 
+            setCurrentPage("voltar");
+        } catch (error) {
+            console.error("Erro ao enviar a solicitação:", error);
+            alert("Erro ao enviar a solicitação.");
+        }
+    };
+
     if (!dadosSolicitacao) {
         return <div>Carregando dados da solicitação...</div>;
     }
@@ -74,14 +76,20 @@ function Solicitacao({ linha }) {
                     </Grid>
                     <Grid>
                         <br />
-                        <label htmlFor="gru">Enviar GRU</label><br />
-                        <input type="file" id='fs' accept=".pdf" className='caixaarquivo'></input><br />
+                        <label htmlFor="gru">Valor da GRU</label><br />
                         <input
-                            type='submit'
-                            id='enviargru'
-                            className='enviar'
-                            onClick={() => setCurrentPage("voltar")}
-                        ></input>
+                            type="text"
+                            id="fs"
+                            className="caixaarquivo"
+                            value={gruValue}
+                            onChange={(e) => setGruValue(e.target.value)} // Atualiza o valor da GRU no estado
+                        /><br />
+                        <input
+                            type="submit"
+                            id="enviargru"
+                            className="enviar"
+                            onClick={handleEnviar} // Função que envia o valor da GRU
+                        />
                     </Grid>
                 </Grid>
             )}

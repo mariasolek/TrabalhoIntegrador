@@ -88,8 +88,7 @@ function Aceitas() {
                                 </Button>
                             </Grid>
                             <Grid size={10}>
-                                <h1>Solicitações aceitas</h1>
-                                <p>Clique na verificação para atualizar o seu resultado</p>
+                                <h1>Solicitações aceitas</h1> <br></br>
                                 <Stack spacing={2}>
                                     <Snackbar open={openMessage} autoHideDuration={6000}>
                                         <Alert severity={messageSeverity}>

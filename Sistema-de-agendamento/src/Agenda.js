@@ -41,8 +41,7 @@ function Agenda() {
 
         const fetchDiasAgendados = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/dias-agendados');
-                // Aqui garantimos que os dias são armazenados corretamente no formato de número do dia
+                const response = await axios.get('http://localhost:3001/dias-agendados');
                 setDiasAgendados(response.data.map((date) => dayjs(date).date()));
             } catch (error) {
                 console.error('Erro ao buscar dias agendados:', error);
@@ -102,12 +101,22 @@ function Agenda() {
                                             <Box textAlign="center">
                                                 {day ? (
                                                     <Button
-                                                        sx={{ margin: '5px', paddingTop: '20px', paddingBottom: '10px' }}
-                                                        color={diasAgendados.includes(day.day) ? 'secondary' : 'primary'} // Dias agendados em 'secondary', caso contrário 'primary'
-                                                        disabled
-                                                    >
-                                                        {day.day}
-                                                    </Button>
+                                                    sx={{
+                                                        margin: '5px',
+                                                        paddingTop: '20px',
+                                                        paddingBottom: '10px',
+                                                        backgroundColor: diasAgendados.includes(day.day) ? '#003366' : 'transparent', // Cor de fundo apenas para os dias agendados
+                                                        color: diasAgendados.includes(day.day) ? 'white' : 'text.primary', // Cor do texto (número) para os dias agendados
+                                                        '&:hover': {
+                                                            backgroundColor: diasAgendados.includes(day.day) ? '#002244' : 'transparent', // Hover apenas nos dias agendados
+                                                        },
+                                                    }}
+                                                    disabled={!diasAgendados.includes(day.day)} // Desabilita os dias sem agendamento
+                                                >
+                                                    {day.day}
+                                                </Button>
+                                                
+                                                
                                                 ) : (
                                                     <div></div>
                                                 )}

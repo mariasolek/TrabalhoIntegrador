@@ -1,64 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import axios from 'axios';
 import Agenda from './Agenda';
-  
 
-function Solicitacao() {
-    const [nome, setNome] = React.useState("");
-    const [placa, setPlaca] = React.useState("");
-    const [tel, setTel] = React.useState("");
-    const [email, setEmail] = React.useState("");
-    const [tp_ver, setVerif] = React.useState("");
-    const [dt, setData] = React.useState("");
-    const [volt, setVolt] = React.useState("");
-    const [n_comp, setNcompartimento] = React.useState("");
+function Solicitacao({ linha }) {
+    const [dadosSolicitacao, setDadosSolicitacao] = useState(null); 
+    const [currentPage, setCurrentPage] = useState("solicit");
 
-    const [currentPage, setCurrentPage] = React.useState("solicit");
+    React.useEffect(() => {
+        const fetchSolicitacao = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/solicitacao?cod=${linha.cod}`);
+                setDadosSolicitacao(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar os dados da solicitação:", error);
+            }
+        };
+    
 
-    return(
+        if (linha && linha.cod) {
+            fetchSolicitacao();
+        }
+    }, [linha]);  
+    
+    if (!dadosSolicitacao) {
+        return <div>Carregando dados da solicitação...</div>;
+    }
+
+    return (
         <div>
             {currentPage === "solicit" && (
-            <Grid container spacing={40}>
-                <Grid>
-                    <h1>Dados da solicitação</h1><br/>
-                    <p>
-                        Proprietário do veículo:{nome}<br/>
-                        Data:{dt}<br/>
-                        Telefone:{tel}<br/>
-                        E-mail:{email}<br/>
-                        Tipo de verificação:{tp_ver}<br/>
-                        Placa do veículo:{placa}<br/>
-                        Volume total:{volt}<br/>
-                        Número de compartimentos:{n_comp}<br/>
-                        {/*documentos*/}
-                    </p>
-                    <Button
-                        id='botaovoltar'
-                        variant="link"
-                        startIcon={<ArrowBackIcon/>}
-                        onClick={() => setCurrentPage("voltar")}
-                    >
-                        Voltar
-                    </Button>
+                <Grid container spacing={40}>
+                    <Grid>
+                        <h1>Dados da solicitação</h1><br />
+                        <p>
+                            Proprietário do veículo: {dadosSolicitacao.proprietario}<br />
+                            Data: {dadosSolicitacao.data}<br />
+                            Telefone: {dadosSolicitacao.tel}<br />
+                            E-mail: {dadosSolicitacao.email}<br />
+                            Tipo de verificação: {dadosSolicitacao.tipo}<br />
+                            Placa do veículo: {dadosSolicitacao.placa}<br />
+                            Volume total: {dadosSolicitacao.vol_total}<br />
+                            Número de compartimentos: {dadosSolicitacao.num_comp}<br />
+                        </p>
+                        <Button
+                            id='botaovoltar'
+                            variant="link"
+                            startIcon={<ArrowBackIcon />}
+                            onClick={() => setCurrentPage("voltar")}
+                        >
+                            Voltar
+                        </Button>
+                    </Grid>
+                    <Grid>
+                        <br />
+                        <label htmlFor="gru">Enviar GRU</label><br />
+                        <input type="number" className='caixaarquivo'></input><br />
+                        <input
+                            type='submit'
+                            id='enviargru'
+                            className='enviar'
+                            onClick={() => setCurrentPage("voltar")}
+                        ></input>
+                    </Grid>
                 </Grid>
-                <Grid>
-                    <br/>
-                    <label for="gru">Valor da GRU</label><br/>
-                    <input type="text" id='fs' className='caixaarquivo'></input><br/>
-
-                    <input type='submit' id='enviargru' className='enviar' onClick={() => setCurrentPage("voltar")}></input> 
-                    {/*setCurrentPage foi colocado aqui por motivos de TESTE, mais tarde quando pudermos realmente enviar se a solicitação foi aceita ou não
-                    isso deve ser mudado seguindo o padrão do componente login !!!!*/}
-                </Grid>
-            </Grid>
             )}
-            {currentPage === "voltar" && (
-                <Agenda/>
-            )}
+            {currentPage === "voltar" && <Agenda />}
         </div>
-    )
+    );
 }
 
 export default Solicitacao;

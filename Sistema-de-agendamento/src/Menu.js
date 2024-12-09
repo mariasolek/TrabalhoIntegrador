@@ -7,8 +7,10 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 
-function Menu({ isLoggedIn, controlaClique, cargo }) {
+function Menu({ isLoggedIn, controlaClique, cargo, activePage }) {
+
   console.log("Valor do cargo: ", cargo);
+
   return (
     <div>
       <Box>
@@ -46,16 +48,16 @@ function Menu({ isLoggedIn, controlaClique, cargo }) {
                   >
                     Logout
                   </Button>
-                  <Button
-                    id="Sol-aceitas"
-                    variant="link"
-                    startIcon={<VisibilityIcon color="primary" />}
-                    onClick={(event) => {
-                      controlaClique(event.target.id);
-                    }}
-                  >
-                    Ver solicitações aceitas
-                  </Button>
+                    <Button
+                      id="Sol-aceitas"
+                      variant="link"
+                      startIcon={<VisibilityIcon color="primary" />}
+                      onClick={(event) => {
+                        controlaClique(event.target.id);
+                      }}
+                    >
+                      Ver solicitações aceitas
+                    </Button>
                 </Grid>
               ) : (
                 <Grid>

@@ -36,7 +36,9 @@ function App() {
     React.useEffect(() => {
 		const token = localStorage.getItem("token");
 		const storedCargo = localStorage.getItem("cargo"); //atualizei Login pra enviar o cargo da pessoa que logou
-		const storedCod = localStorage.getItem("cod");
+		const storedCod = sessionStorage.getItem("cod");
+		console.log("Código recuperado do sessionStorage:", storedCod);
+
 		if (token && storedCargo) {
 			console.log("Cargo carregado do localStorage:", storedCargo);
 		  setIsLoggedIn(true);
@@ -48,18 +50,18 @@ function App() {
 	}, []);
 	  
 
-	const handleLogin = (status) => {
+	const handleLogin = (status, codigo) => {
 		const storedCargo = localStorage.getItem("cargo"); //precisa ser assim se não não atualiza na hora
-		const storedCod = localStorage.getItem("cod");
+		const storedCod = sessionStorage.getItem("cod");
 		setIsLoggedIn(status); 
 		setCargo(storedCargo);
 		setCod(storedCod);
+		console.log("cod:", cod);
 	};
 	
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		localStorage.removeItem("cargo");
-		localStorage.removeItem("cod");
 		setCargo(null);
 		setIsLoggedIn(false);
 		setExibeAceito(false);

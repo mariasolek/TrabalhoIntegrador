@@ -49,6 +49,7 @@ function Solicitacao({ linha, codFunc }) {
     const handleRejeitar = async () => {
         try {
             const response = await axios.post('http://localhost:3001/rejeitar-solicitacao', {
+                func: codFunc,
                 cod: linha.cod
             });
             alert(response.data.message); 
@@ -98,17 +99,29 @@ function Solicitacao({ linha, codFunc }) {
                             value={gruValue}
                             onChange={(e) => setGruValue(e.target.value)} // Atualiza o valor da GRU no estado
                         /><br />
-                        <input
-                            type="submit"
-                            id="enviargru"
-                            className="enviar"
-                            onClick={handleEnviar} // Função que envia o valor da GRU
-                        />
-                        
+                        <Grid container>
+                            <Grid>
+                                <input
+                                    type="submit"
+                                    id="enviargru"
+                                    className="enviar"
+                                    onClick={handleEnviar} // Função que envia o valor da GRU
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid>
+                                <Button
+                                    type="link"
+                                    className="enviar"
+                                    onClick={handleRejeitar}
+                                >
+                                    Rejeitar
+                                </Button>
+                            </Grid>
                     </Grid>
                 </Grid>
             )}
-            {currentPage === "voltar" && <Agenda />}
+            {currentPage === "voltar" && <Agenda codFunc={codFunc}/>}
         </div>
     );
 }

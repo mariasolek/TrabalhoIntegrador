@@ -11,8 +11,8 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const pgp = require("pg-promise")({});
 
-const usuario = "";
-const senha = "";
+const usuario = "alex";
+const senha = "a1895";
 const db = pgp(`postgres://${usuario}:${senha}@localhost:5432/trabintegrador`);
 
 const app = express();
@@ -139,7 +139,6 @@ app.post(
             });
 
             console.log("Token gerado:", token); //pra teste
-
             //retorna o token e o cargo na resposta
             return res.json({ message: "Login bem-sucedido", token: token, cargo: cargo, cod: user.cod});
         } catch (error) {
@@ -336,10 +335,10 @@ app.post('/atualizar-solicitacao', async (req, res) => {
 });
 
 app.post('/rejeitar-solicitacao', async (req, res) => {
-    const cod = req.body;
+    const {cod, func} = req.body;
     try {
-        await db.none(`UPDATE solicitacao SET status = 'Rejeitada' WHERE cod = $1;`,
-            [cod]);
+        await db.none(`UPDATE solicitacao SET status = 'Rejeitada', func = $1  WHERE cod = $2;`,
+            [func, cod]);
         res.status(200).json({ message: "Solicitação Rejeitada" });
     } catch (error) {
         console.error("Erro ao atualizar solicitação:", error);

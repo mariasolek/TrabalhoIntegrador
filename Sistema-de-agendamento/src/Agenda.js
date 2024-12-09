@@ -18,6 +18,7 @@ const colunas = [
 ];
 
 function Agenda({codFunc}) {
+    console.log("codFunc recebido no Agenda:", codFunc);
     const [linhas, setLinhas] = React.useState([]);
     const [linhaSel, setLinhaSel] = React.useState(null); // Linha selecionada
     const [diasAgendados, setDiasAgendados] = React.useState([]); // Estado para os dias agendados

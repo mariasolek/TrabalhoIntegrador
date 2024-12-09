@@ -126,22 +126,22 @@ app.post(
 
         try {
             //procura o cargo no banco
-            const result = await db.one('SELECT cargo FROM funcionario WHERE cod = $1;', [user.cod]);
-            if (!result) {
+            const resultCargo = await db.one('SELECT cargo FROM funcionario WHERE cod = $1;', [user.cod]);
+            if (!resultCargo) {
                 return res.status(404).json({ message: "Usuário não encontrado no banco de dados" });
             }
-            const cargo = result.cargo;
+            const cargo = resultCargo.cargo;
             console.log("Cargo:", cargo); //pra teste
 
             // Gera o token JWT com o código do usuário e o cargo
-            const token = jwt.sign({ codigo: user.cod, cargo: cargo }, "your-secret-key", {
+            const token = jwt.sign({ codigo: user.cod, cargo: cargo, cod: user.cod }, "your-secret-key", {
                 expiresIn: "1h",
             });
 
             console.log("Token gerado:", token); //pra teste
 
             //retorna o token e o cargo na resposta
-            return res.json({ message: "Login bem-sucedido", token: token, cargo: cargo });
+            return res.json({ message: "Login bem-sucedido", token: token, cargo: cargo, cod: user.cod});
         } catch (error) {
             console.error("Erro ao consultar banco:", error);
             return res.status(500).json({ message: "Erro ao processar o login" });
@@ -163,31 +163,6 @@ app.get("/", (req, res) => {
 	res.send("Hello, world!");
 });
 
-app.get("/funcionarios", async (req, res) => {
-	try {
-		const funcionarios = await db.any("SELECT * FROM funcionario;");
-		console.log("Retornando todos os funcionários.");
-		res.json(funcionarios).status(200);
-	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
-	}
-});
-
-app.get("/funcionario", async (req, res) => {
-	try {
-		const funcionarioCod = parseInt(req.query.cod);
-		console.log(`Retornando funcionário: ${funcionarioCod}.`);
-		const funcionario = await db.one(
-			"SELECT cod, nome, email, tel, cargo FROM funcionario WHERE cod = $1;",
-			[funcionarioCod],
-		);
-		res.json(funcionario).status(200);
-	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
-	}
-});
 
 app.post("/cadastro_func", async (req, res) => {
     const saltRounds = 10;
@@ -231,6 +206,24 @@ app.get("/solicitacoes_pendentes", async (req, res) => {
     }
 });
 
+app.get("/solicitacoes_aceitas", async (req, res) => {
+    try {
+        const solicitacoes = await db.any(`
+            SELECT s.cod, s.placa, v.vol_total AS volume, p.nome AS empresa, r.dt AS data
+            FROM solicitacao s
+            JOIN veiculo v ON s.placa = v.placa
+            JOIN proprietario p ON v.prop = p.email
+            JOIN reservas r ON s.dt = r.cod
+            WHERE s.status = 'Aceita';
+        `);
+        console.log("Retornando todas as  solicitações aceitas");
+        res.json(solicitacoes).status(200);
+    } catch (error) {
+        console.error("Erro ao buscar solicitações aceitas:", error);
+        res.sendStatus(400);
+    }
+});
+
 
 app.get("/solicitacao", async (req, res) => {
 	try {
@@ -259,120 +252,97 @@ app.get("/solicitacao", async (req, res) => {
 });
 
 
-app.post("/cadastro_veiculo", async (req, res) => {
-    try {
-        const {placa, vol_total, num_comp, ste_ad, proprietario} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-
-        await db.none("INSERT INTO veiculo (placa, vol_total, num_comp, ste_ad, proprietario) VALUES ($1, $2, $3, $4, $5);", [
-            placa, 
-			vol_total, 
-			num_comp, 
-			ste_ad,
-			proprietario
-        ]);
-        console.log("Veículo inserido com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
-app.post("/cadastro_doc", async (req, res) => {
-    try {
-        const {placa, crlv, comp_ver} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-
-        await db.none("INSERT INTO veiculo (crlv, comp_ver) VALUES ($1, $2) WHERE placa = $3;", [
-            crlv, 
-			comp_ver,
-			placa
-        ]);
-        console.log("Documentos inseridos com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
-app.post("/cadastro_docnovo", async (req, res) => {
-    try {
-        const {placa, notaf, dcl_fabr} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-
-        await db.none("INSERT INTO veiculo (notaf, dcl_conf) VALUES ($1, $2) WHERE placa = $3;", [
-            notaf, 
-			dcl_fabr,
-			placa
-        ]);
-        console.log("Documentos inseridos com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
-app.post("/cadastro_proprietario", async (req, res) => {
-    const saltRounds = 10;
-    try {
-        const {email, nome, tel} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-        const salt = bcrypt.genSaltSync(saltRounds);
-        const hashedSenha = bcrypt.hashSync(senha, salt);
-
-        await db.none("INSERT INTO proprietario(email, nome, tel) VALUES ($1, $2, $3);", [
-            email, 
-			nome, 
-			tel
-        ]);
-        console.log("Proprietário cadastrado com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
 app.post('/formulario', async (req, res) => {
     const { nome, telefone, email, placa, volume, ncompartimento, setasAdc, tipoVerificacao, dt } = req.body;
 
     try {
-        // Verificar se o proprietário existe
+        //se a data já aparece 6 vezes em reservas
+        const countReservas = await db.one('SELECT COUNT(*) FROM reservas WHERE dt = $1', [dt]);
+        if (parseInt(countReservas.count, 10) >= 6) {
+            return res.status(400).json({ message: 'A data selecionada já atingiu o limite de reservas!' });
+        }
+        //proprietário
         const proprietario = await db.oneOrNone('SELECT * FROM proprietario WHERE email = $1', [email]);
         if (!proprietario) {
-            // Inserir proprietário se não existir
             await db.none('INSERT INTO proprietario(email, nome, tel) VALUES($1, $2, $3)', 
                 [email, nome, telefone]);
         }
 
-        // Verificar se o veículo existe
+        //veículo
         const veiculo = await db.oneOrNone('SELECT * FROM veiculo WHERE placa = $1', [placa]);
         if (!veiculo) {
-            // Inserir veículo se não existir
             const insertVeiculoQuery = 'INSERT INTO veiculo(placa, vol_total, num_comp, set_ad, prop) VALUES($1, $2, $3, $4, $5)';
             await db.none(insertVeiculoQuery, [placa, volume, ncompartimento, setasAdc, email]);
         }
 
-        // Verificar se a data está disponível para reserva
-        const reserva = await db.oneOrNone('SELECT * FROM reservas WHERE dt = $1', [dt]);
-        const reservaId = reserva.cod
-        if (!reserva) {
-            // Inserir reserva se a data estiver disponível
-            const reservaResponse = await db.one('INSERT INTO reservas(cod, dt, status) VALUES(default, $1, $2)', [dt, 'reservado']);
-            const reservaId = reservaResponse.cod;
-            // Inserir solicitação
-        }
-            await db.none(`
-                INSERT INTO solicitacao(cod, status, tipo, placa, dt) 
-                VALUES(default, $1, $2, $3, $4)`, 
-                ['Pendente', tipoVerificacao, placa, reservaId]);
-            res.json({ message: 'Solicitação realizada com sucesso!' });
-        
+        //inserir a data em reservas e obter o ID
+        const reserva = await db.one('INSERT INTO reservas(cod, dt, status) VALUES(default, $1, $2) RETURNING cod', 
+                                     [dt, 'reservado']);
+        const reservaId = reserva.cod;
+
+        //solicitação
+        await db.none(`
+            INSERT INTO solicitacao(cod, status, tipo, placa, dt) 
+            VALUES(default, $1, $2, $3, $4)`, 
+            ['Pendente', tipoVerificacao, placa, reservaId]);
+        res.json({ message: 'Solicitação realizada com sucesso!' });
+
     } catch (error) {
         console.error('Erro no processamento:', error);
         res.status(500).json({ message: 'Erro ao inserir a solicitação no banco' });
+    }
+});
+
+app.get('/dias-indisponiveis', async (req, res) => {
+    try {
+        const diasIndisponiveis = await db.any( `SELECT dt FROM reservas GROUP BY dt HAVING COUNT(*) >= 6;`);
+        const datasIndisponiveis = diasIndisponiveis.map((row) => row.dt);
+        res.json(datasIndisponiveis); 
+    } catch (error) {
+        console.error('Erro ao buscar dias indisponíveis:', error);
+        res.status(500).json({ error: 'Erro ao buscar dias indisponíveis.' });
+    }
+});
+
+app.get('/dias-agendados', async (req, res) => {
+    try {
+        const diasAgendados = await db.any(`SELECT DISTINCT dt FROM reservas;`);
+        const datasAgendadas = diasAgendados.map((row) => row.dt);
+
+        res.json(datasAgendadas); 
+    } catch (error) {
+        console.error('Erro ao buscar dias agendados:', error);
+        res.status(500).json({ error: 'Erro ao buscar dias agendados.' });
+    }
+});
+
+app.post('/atualizar-solicitacao', async (req, res) => {
+    const { cod, val_gru, func } = req.body;
+    console.log("Dados recebidos no backend:", { cod, val_gru, func });
+
+    if (!cod || !val_gru) {
+        return res.status(400).json({ message: "Código e valor da GRU são obrigatórios." });
+    }
+
+    try {
+        await db.none(`UPDATE solicitacao SET val_gru = $1, status = 'Aceita', func = $2 
+            WHERE cod = $3;`,
+            [val_gru, func, cod]);
+        res.status(200).json({ message: "Solicitação aceita!" });
+    } catch (error) {
+        console.error("Erro ao atualizar solicitação:", error);
+        res.status(500).json({ message: "Erro interno do servidor" });
+    }
+});
+
+app.post('/rejeitar-solicitacao', async (req, res) => {
+    const cod = req.body;
+    try {
+        await db.none(`UPDATE solicitacao SET status = 'Rejeitada' WHERE cod = $1;`,
+            [cod]);
+        res.status(200).json({ message: "Solicitação Rejeitada" });
+    } catch (error) {
+        console.error("Erro ao atualizar solicitação:", error);
+        res.status(500).json({ message: "Erro interno do servidor" });
     }
 });

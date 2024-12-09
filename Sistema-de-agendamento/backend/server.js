@@ -163,31 +163,6 @@ app.get("/", (req, res) => {
 	res.send("Hello, world!");
 });
 
-app.get("/funcionarios", async (req, res) => {
-	try {
-		const funcionarios = await db.any("SELECT * FROM funcionario;");
-		console.log("Retornando todos os funcionários.");
-		res.json(funcionarios).status(200);
-	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
-	}
-});
-
-app.get("/funcionario", async (req, res) => {
-	try {
-		const funcionarioCod = parseInt(req.query.cod);
-		console.log(`Retornando funcionário: ${funcionarioCod}.`);
-		const funcionario = await db.one(
-			"SELECT cod, nome, email, tel, cargo FROM funcionario WHERE cod = $1;",
-			[funcionarioCod],
-		);
-		res.json(funcionario).status(200);
-	} catch (error) {
-		console.log(error);
-		res.sendStatus(400);
-	}
-});
 
 app.post("/cadastro_func", async (req, res) => {
     const saltRounds = 10;
@@ -277,47 +252,6 @@ app.get("/solicitacao", async (req, res) => {
 });
 
 
-app.post("/cadastro_veiculo", async (req, res) => {
-    try {
-        const {placa, vol_total, num_comp, ste_ad, proprietario} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-
-        await db.none("INSERT INTO veiculo (placa, vol_total, num_comp, ste_ad, proprietario) VALUES ($1, $2, $3, $4, $5);", [
-            placa, 
-			vol_total, 
-			num_comp, 
-			ste_ad,
-			proprietario
-        ]);
-        console.log("Veículo inserido com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
-app.post("/cadastro_proprietario", async (req, res) => {
-    const saltRounds = 10;
-    try {
-        const {email, nome, tel} = req.body;
-        console.log("Dados recebidos no backend:", req.body);
-        const salt = bcrypt.genSaltSync(saltRounds);
-        const hashedSenha = bcrypt.hashSync(senha, salt);
-
-        await db.none("INSERT INTO proprietario(email, nome, tel) VALUES ($1, $2, $3);", [
-            email, 
-			nome, 
-			tel
-        ]);
-        console.log("Proprietário cadastrado com sucesso!"); 
-        res.sendStatus(200);
-    } catch (error) {
-        console.log("Erro ao inserir no banco:", error); 
-        res.sendStatus(400);
-    }
-});
-
 app.post('/formulario', async (req, res) => {
     const { nome, telefone, email, placa, volume, ncompartimento, setasAdc, tipoVerificacao, dt } = req.body;
 
@@ -367,14 +301,10 @@ app.get('/dias-indisponiveis', async (req, res) => {
             GROUP BY dt
             HAVING COUNT(*) >= 6;
         `
-
-        // Executa a consulta usando pg-promise
         const diasIndisponiveis = await db.any(query);
-
-        // Extrai apenas as datas do resultado
         const datasIndisponiveis = diasIndisponiveis.map((row) => row.dt);
 
-        res.json(datasIndisponiveis); // Retorna as datas ao frontend
+        res.json(datasIndisponiveis); 
     } catch (error) {
         console.error('Erro ao buscar dias indisponíveis:', error);
         res.status(500).json({ error: 'Erro ao buscar dias indisponíveis.' });
@@ -390,7 +320,7 @@ app.get('/dias-agendados', async (req, res) => {
         const diasAgendados = await db.any(query);
         const datasAgendadas = diasAgendados.map((row) => row.dt);
 
-        res.json(datasAgendadas); // Retorna as datas ao frontend
+        res.json(datasAgendadas); 
     } catch (error) {
         console.error('Erro ao buscar dias agendados:', error);
         res.status(500).json({ error: 'Erro ao buscar dias agendados.' });

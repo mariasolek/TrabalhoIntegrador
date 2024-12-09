@@ -22,7 +22,6 @@ function Aceitas() {
     const [filteredLinhas, setFilteredLinhas] = React.useState([]); // Estado para armazenar as linhas filtradas
     const [loading, setLoading] = React.useState(true); // Estado para controle de carregamento
     const [error, setError] = React.useState(); // Estado para erros
-    const [linhaSel, setLinha] = React.useState(null);
     const [currentPage, setCurrentPage] = React.useState(true);
     const [filterDate, setFilterDate] = React.useState(""); // Estado para a data de filtro
 
@@ -63,18 +62,11 @@ function Aceitas() {
         }
     }, [filterDate, linhas]);
 
-    function handleRowClick(params) {
-        setLinha(params.row);
-    }
 
     return (
         <div>
             <Box>
-                {linhaSel ? (
-                    <Box>
-                        {/* Página para mostrar detalhes ou atualizar o resultado */}
-                    </Box>
-                ) : currentPage ? (
+                { currentPage ? (
                     <div>
                         <Grid container spacing={3}>
                             <Grid size={2}>
@@ -108,7 +100,6 @@ function Aceitas() {
                                         <DataGrid
                                             rows={filteredLinhas}
                                             columns={colunas}
-                                            onRowClick={handleRowClick}
                                             loading={loading}
                                             disableSelectionOnClick
                                         />

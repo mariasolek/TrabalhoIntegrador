@@ -91,6 +91,14 @@ fieldset {
     margin-top: 20px;
 }
 
+#botaovoltar3 {
+    background-color: #003867;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
 #afasta {
     padding-left: 11px;
 }

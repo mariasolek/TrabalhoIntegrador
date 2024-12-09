@@ -2,6 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import { Alert, Box, Snackbar, Stack, TextField, Button } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Grid from '@mui/material/Grid2';
+import Agenda from './Agenda';
 
 const colunas = [
     { field: "placa", headerName: "Placa", width: 140 },
@@ -24,6 +27,8 @@ function Aceitas() {
     
     const[linhaSel, setLinha] = React.useState(null);
 
+    const [currentPage, setCurrentPage] = React.useState(true);
+
     React.useEffect(() => {
         const getDados = async () => {
           try {
@@ -43,10 +48,6 @@ function Aceitas() {
         setLinha(params.row);
     }
 
-    function handleBack () {
-        setLinha(""); 
-      };
-
     return(
         <div>
             <Box>
@@ -54,31 +55,47 @@ function Aceitas() {
                     <Box>
                         {/*pagina pra colocar o resultado*/}
                     </Box>
-                ) : (
+                ) : currentPage ? (
             <div>  
-            <h1>Solicitações aceitas</h1>
-            <p>Clique na verificação para atualizar o seu resultado</p>
-            <Stack spacing={2}>
-                <Snackbar
-                    open={openMessage}
-                    autoHideDuration={6000}
+            <Grid container spacing={3}>
+              <Grid size={2}>
+                <Button
+                  id='botaovoltar3'
+                  variant="link"
+                  startIcon={<ArrowBackIcon/>}
+                  onClick={() => setCurrentPage(false)}
                 >
-                    <Alert
-                        severity={messageSeverity}
-                                            >
-                        {messageText}
-                    </Alert>
-                </Snackbar>
-                <Box style={{ height: "500px" }}>
-                    <DataGrid 
-                    rows={linhas}
-                    columns={colunas} 
-                    onRowClick={handleRowClick}
-                    />
-                </Box>
-              </Stack>
+                      Voltar
+                </Button>
+              </Grid>
+              <Grid size={10}>
+                <h1>Solicitações aceitas</h1>
+                <p>Clique na verificação para atualizar o seu resultado</p>
+                <Stack spacing={2}>
+                    <Snackbar
+                        open={openMessage}
+                        autoHideDuration={6000}
+                    >
+                        <Alert
+                            severity={messageSeverity}
+                                                >
+                            {messageText}
+                        </Alert>
+                    </Snackbar>
+                    <Box style={{ height: "500px" }}>
+                        <DataGrid 
+                        rows={linhas}
+                        columns={colunas} 
+                        onRowClick={handleRowClick}
+                        />
+                    </Box>
+                  </Stack>
+                </Grid>
+              </Grid>
               </div>
-               )}
+                ):(
+                  <Agenda/>
+                )}
           </Box>
       </div>
     )

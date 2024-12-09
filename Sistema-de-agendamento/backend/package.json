@@ -9,9 +9,11 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "express-cors": "^0.0.3",
+    "express-session": "^1.18.1",
     "jwt": "^0.2.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "pg-promise": "^11.10.2",
     "session": "^0.1.0"
   }

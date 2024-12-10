@@ -20,9 +20,9 @@ const colunas = [
 function Agenda({codFunc}) {
     console.log("codFunc recebido no Agenda:", codFunc);
     const [linhas, setLinhas] = React.useState([]);
-    const [linhaSel, setLinhaSel] = React.useState(null); // Linha selecionada
-    const [diasAgendados, setDiasAgendados] = React.useState([]); // Estado para os dias agendados
-    const [currentPage, setCurrentPage] = React.useState("agenda"); // Controle de exibição
+    const [linhaSel, setLinhaSel] = React.useState(null); 
+    const [diasAgendados, setDiasAgendados] = React.useState([]); 
+    const [currentPage, setCurrentPage] = React.useState("agenda"); 
 
    
     React.useEffect(() => {
@@ -56,12 +56,12 @@ function Agenda({codFunc}) {
 
     const handleRowClick = (params) => {
         setLinhaSel(params.row);
-        setCurrentPage("solicitacao"); // Alterna para o componente Solicitacao
+        setCurrentPage("solicitacao"); 
     };
 
     const handleBack = () => {
         setLinhaSel(null);
-        setCurrentPage("agenda"); // Volta para o componente Agenda
+        setCurrentPage("agenda"); 
     };
 
     const currentDate = dayjs();
@@ -83,7 +83,6 @@ function Agenda({codFunc}) {
     return (
         <div>
             {currentPage === "agenda" ? (
-                // Componente Agenda
                 <Grid container spacing={20}>
                     {/* Agenda */}
                     <Grid item xs={8}>
@@ -145,7 +144,6 @@ function Agenda({codFunc}) {
                     </Grid>
                 </Grid>
             ) : (
-                // Componente Solicitacao
                 <Box>
                     <Solicitacao linha={linhaSel} codFunc={codFunc}/>
                 </Box>

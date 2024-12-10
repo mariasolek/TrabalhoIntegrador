@@ -11,7 +11,7 @@ dayjs.locale('pt-br');
 function Calendario() {
     const currentDate = dayjs();
     const daysInMonth = currentDate.daysInMonth();
-    const firstDayOfMonth = currentDate.startOf('month').day(); // dia da semana do primeiro dia (0=domingo, 6=sábado)
+    const firstDayOfMonth = currentDate.startOf('month').day(); 
 
     const daysArray = Array.from({ length: daysInMonth }, (_, index) => {
         return {
@@ -31,13 +31,13 @@ function Calendario() {
         weeks.push(allDays.slice(i, i + 7));
     }
 
-        // Estado para dias indisponíveis
-        const [diasIndisponiveis, setDiasIndisponiveis] = React.useState([]);
+        
+    const [diasIndisponiveis, setDiasIndisponiveis] = React.useState([]);
 
     const fetchDiasIndisponiveis = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/dias-indisponiveis'); // Verifique a URL
-            const dias = response.data.map((date) => dayjs(date).date()); // Extrair o dia do mês
+            const response = await axios.get('http://localhost:3001/dias-indisponiveis'); 
+            const dias = response.data.map((date) => dayjs(date).date()); 
             setDiasIndisponiveis(dias);
             console.log('Dias indisponíveis:', dias);
         } catch (error) {
@@ -45,7 +45,6 @@ function Calendario() {
         }
     };
 
-    // Chamada inicial para buscar os dias indisponíveis
     React.useEffect(() => {
         fetchDiasIndisponiveis();
     }, []);
@@ -76,13 +75,13 @@ function Calendario() {
                                                         margin: '5px',
                                                         paddingTop: '10px',
                                                         paddingBottom: '10px',
-                                                        color: diasIndisponiveis.includes(day.day) || day.date.day() === 0 || day.date.day() === 6 ? 'lightgray' : 'inherit', // Alterando a cor do número
+                                                        color: diasIndisponiveis.includes(day.day) || day.date.day() === 0 || day.date.day() === 6 ? 'lightgray' : 'inherit',
                                                     }}
                                                 >
                                                     {day.day}
                                                 </Button>
                                             ) : (
-                                                <div></div> // Espaço vazio para os dias anteriores ao mês
+                                                <div></div> 
                                             )}
                                         </Box>
                                     </Grid>

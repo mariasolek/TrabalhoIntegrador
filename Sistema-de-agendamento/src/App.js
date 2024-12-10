@@ -35,7 +35,7 @@ function App() {
 
     React.useEffect(() => {
 		const token = localStorage.getItem("token");
-		const storedCargo = localStorage.getItem("cargo"); //atualizei Login pra enviar o cargo da pessoa que logou
+		const storedCargo = localStorage.getItem("cargo"); 
 		const storedCod = sessionStorage.getItem("cod");
 		console.log("Código recuperado do sessionStorage:", storedCod);
 
@@ -76,7 +76,7 @@ function App() {
 	};
 
 
-    function controlaInterface(id) { //teste
+    function controlaInterface(id) { 
 		console.log(`Veio ${id}`); 
 		switch (id){
 			case 'Cadastro':

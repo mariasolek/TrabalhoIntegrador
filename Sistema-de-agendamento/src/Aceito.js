@@ -11,8 +11,8 @@ const colunas = [
     { field: "empresa", headerName: "Empresa", width: 180 },
     { field: "volume", headerName: "Volume", width: 100 },
     { field: "data", headerName: "Data", width: 180 },
-    { field: "gru", headerName: "GRU", width: 150 }, // Coluna para o GRU
-    { field: "funcionario", headerName: "Funcionario", width: 180 }, // Coluna para o Funcionario
+    { field: "gru", headerName: "GRU", width: 150 }, 
+    { field: "funcionario", headerName: "Funcionario", width: 180 }, 
 ];
 
 function Aceitas() {
@@ -20,30 +20,28 @@ function Aceitas() {
     const [openMessage, setOpenMessage] = React.useState(false);
     const [messageText, setMessageText] = React.useState("");
     const [messageSeverity, setMessageSeverity] = React.useState("success");
-    const [linhas, setLinhas] = React.useState([]); // Estado para armazenar os dados das linhas
-    const [filteredLinhas, setFilteredLinhas] = React.useState([]); // Estado para armazenar as linhas filtradas
-    const [loading, setLoading] = React.useState(true); // Estado para controle de carregamento
-    const [error, setError] = React.useState(); // Estado para erros
+    const [linhas, setLinhas] = React.useState([]); 
+    const [filteredLinhas, setFilteredLinhas] = React.useState([]); 
+    const [loading, setLoading] = React.useState(true); 
+    const [error, setError] = React.useState(); 
     const [currentPage, setCurrentPage] = React.useState(true);
-    const [filterDate, setFilterDate] = React.useState(""); // Estado para a data de filtro
+    const [filterDate, setFilterDate] = React.useState(""); 
 
     React.useEffect(() => {
         const getDados = async () => {
             try {
-                // Corrigido o protocolo para http e ajustada a URL da API
                 const response = await axios.get('http://localhost:3001/solicitacoes_aceitas');
-                // Ajuste para tratar os dados retornados e exibir corretamente
                 const solicitacoesFormatadas = response.data.map(item => ({
-                    id: item.cod, // Definir um id para as linhas do DataGrid
+                    id: item.cod, 
                     placa: item.placa,
                     empresa: item.empresa,
                     volume: item.volume,
                     data: item.data,
-                    gru: item.val_gru, // Adicionando o GRU
-                    funcionario: item.func, // Adicionando o nome do funcionário
+                    gru: item.val_gru, 
+                    funcionario: item.func, 
                 }));
                 setLinhas(solicitacoesFormatadas);
-                setFilteredLinhas(solicitacoesFormatadas); // Inicializa com todos os dados
+                setFilteredLinhas(solicitacoesFormatadas); 
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -55,14 +53,13 @@ function Aceitas() {
     }, []);
 
     React.useEffect(() => {
-        // Filtra as linhas quando a data for alterada
         if (filterDate) {
             const dataFiltrada = linhas.filter(item =>
                 item.data.includes(filterDate)
             );
             setFilteredLinhas(dataFiltrada);
         } else {
-            setFilteredLinhas(linhas); // Se não houver filtro, exibe todas as linhas
+            setFilteredLinhas(linhas); 
         }
     }, [filterDate, linhas]);
 

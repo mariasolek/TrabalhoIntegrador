@@ -26,7 +26,7 @@ function Login(props) {
            
     
             if (response.status >= 200 && response.status < 300) {
-				//salva o token e cargo na sessão
+				//salva o token,cargo e cod na sessão
 				localStorage.setItem("token", response.data.token);
                 localStorage.setItem("cargo", response.data.cargo);
                 sessionStorage.setItem("cod", codigo);
@@ -88,8 +88,6 @@ function Login(props) {
                 </div>
             )}
             </Container>
-
-            {/* Mensagem de feedback */}
             {openMessage && (
                 <div 
                     style={{

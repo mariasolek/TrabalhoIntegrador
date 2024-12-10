@@ -26,7 +26,7 @@ function Menu({ isLoggedIn, controlaClique, cargo, activePage }) {
               <br />
               {isLoggedIn ? (
                 <Grid>
-                  {cargo === "1" && ( //ta controlando pelo cod de cargo agr
+                  {cargo === "1" && ( 
                     <Button
                       id="Cadastro"
                       variant="link"

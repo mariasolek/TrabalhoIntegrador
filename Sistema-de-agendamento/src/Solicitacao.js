@@ -7,7 +7,7 @@ import Agenda from './Agenda';
 
 function Solicitacao({ linha, codFunc }) {
     const [dadosSolicitacao, setDadosSolicitacao] = useState(null);
-    const [gruValue, setGruValue] = useState(""); // Estado para armazenar o valor da GRU
+    const [gruValue, setGruValue] = useState(""); 
     const [currentPage, setCurrentPage] = useState("solicit");
 
     React.useEffect(() => {
@@ -97,7 +97,7 @@ function Solicitacao({ linha, codFunc }) {
                             id="fs"
                             className="caixaarquivo"
                             value={gruValue}
-                            onChange={(e) => setGruValue(e.target.value)} // Atualiza o valor da GRU no estado
+                            onChange={(e) => setGruValue(e.target.value)} 
                         /><br />
                         <Grid container>
                             <Grid>
@@ -105,21 +105,22 @@ function Solicitacao({ linha, codFunc }) {
                                     type="submit"
                                     id="enviargru"
                                     className="enviar"
-                                    onClick={handleEnviar} // Função que envia o valor da GRU
+                                    onClick={handleEnviar} 
                                 />
                             </Grid>
-                        </Grid>
-                        <Grid>
+                            <Grid>
                                 <Button
                                     type="link"
-                                    className="enviar"
-                                    onClick={handleRejeitar}
+                                    variant= "contained"
+                                    sx={{backgroundColor:'#BF0411', marginTop: '300px', marginLeft: '10px', paddingRight:'25px', paddingLeft: '25px', paddingTop: '15px', paddingBottom: '15px'}}
+                                    onClick={handleRejeitar} 
                                 >
                                     Rejeitar
                                 </Button>
                             </Grid>
                     </Grid>
                 </Grid>
+            </Grid>
             )}
             {currentPage === "voltar" && <Agenda codFunc={codFunc}/>}
         </div>

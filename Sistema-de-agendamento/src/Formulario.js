@@ -79,7 +79,7 @@ function Formulario() {
                                         onChange={(e) => setPlaca(e.target.value)}></input><br/>
 
                                         <label for="nro-comp">Número de compartimentos</label><br/>
-                                        <input type="text" id="tel-prop" placeholder="Digite aqui" className='caixatexto'
+                                        <input type="text" id="nro-comp" placeholder="Digite aqui" className='caixatexto'
                                         onChange={(e) => setNcompartimento(e.target.value)}></input><br/>
 
                                         <Grid container spacing={3}>

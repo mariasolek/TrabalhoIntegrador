@@ -272,8 +272,8 @@ app.post('/formulario', async (req, res) => {
                             VALUES($1, $2, $3, $4, $5);`, 
                 [placa, volume, ncompartimento, setasAdc, email]);}
         //inserir a data em reservas e obter o ID
-        const reserva = await db.one('INSERT INTO reservas(cod, dt, status) VALUES(default, $1, $2) RETURNING cod;', 
-                                     [dt, 'reservado']);
+        const reserva = await db.one('INSERT INTO reservas(cod, dt) VALUES(default, $1) RETURNING cod;', 
+                                     [dt]);
         const reservaId = reserva.cod;
 
         //solicitação
@@ -302,7 +302,9 @@ app.get('/dias-indisponiveis', async (req, res) => {
 
 app.get('/dias-agendados', async (req, res) => {
     try {
-        const diasAgendados = await db.any(`SELECT DISTINCT dt FROM reservas;`);
+        const diasAgendados = await db.any(`SELECT DISTINCT r.dt FROM reservas r
+                                            JOIN solicitacao s ON r.cod = s.dt
+                                            WHERE s.status = 'Aceita';`);
         const datasAgendadas = diasAgendados.map((row) => row.dt);
         res.json(datasAgendadas); 
     } catch (error) {
